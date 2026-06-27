@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WeddingDing — Le faire-part qui s'ouvre d'un tap</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Serif+Display:ital@0;1&family=Pacifico&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,28 +31,45 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* NAV */
+    /* NAV — transparente sur hero, blanche au scroll */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(16px);
+      background: transparent;
       padding: 0 48px;
-      height: 68px;
+      height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+
+    nav.scrolled .logo { color: var(--dark); }
+    nav.scrolled .logo span { color: var(--coral); }
+    nav.scrolled .nav-links a { color: var(--gray); }
+    nav.scrolled .nav-links a:hover { color: var(--dark); }
+    nav.scrolled .nav-btn {
+      background: var(--coral);
+      border-color: var(--coral);
+      color: white;
     }
 
     .logo {
-      font-family: 'DM Serif Display', serif;
+      font-family: 'Pacifico', cursive;
       font-size: 1.3rem;
-      color: var(--dark);
-      letter-spacing: -0.01em;
+      color: white;
+      letter-spacing: 0;
+      transition: color 0.3s;
     }
 
-    .logo span { color: var(--coral); }
+    .logo span { color: rgba(255,200,180,1); transition: color 0.3s; }
 
     .nav-links {
       display: flex;
@@ -62,36 +79,40 @@
 
     .nav-links a {
       font-size: 0.875rem;
-      color: var(--gray);
+      color: rgba(255,255,255,0.85);
       text-decoration: none;
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: var(--dark); }
+    .nav-links a:hover { color: white; }
 
     .nav-btn {
-      background: var(--coral);
+      background: transparent;
       color: white;
-      border: none;
-      padding: 10px 24px;
+      border: 1.5px solid rgba(255,255,255,0.7);
+      padding: 9px 22px;
       border-radius: 100px;
       font-family: 'DM Sans', sans-serif;
       font-size: 0.875rem;
       font-weight: 500;
       cursor: pointer;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: all 0.25s;
     }
 
-    .nav-btn:hover { opacity: 0.85; }
+    .nav-btn:hover {
+      background: white;
+      color: var(--dark);
+      border-color: white;
+    }
 
-    /* HERO — plein écran photo couple */
+    /* HERO — plein écran immersif, contenu centré */
     .hero {
       height: 100vh;
       min-height: 600px;
       position: relative;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       overflow: hidden;
     }
 
@@ -99,35 +120,74 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
+      background: black;
     }
 
     .hero-bg video {
       position: absolute;
-      inset: 0;
-      width: 100%;
+      top: 0;
+      left: 5%;
       height: 100%;
+      width: 97%;
       object-fit: cover;
       object-position: center;
+      filter: brightness(0.92) contrast(1.08) saturate(0.82);
     }
 
+    /* Overlay de base */
     .hero-overlay {
       position: absolute;
       inset: 0;
+      background: rgba(0,0,0,0.22);
+    }
+
+    /* Estompe noire gauche — transition premium */
+    .hero-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
       background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.15) 0%,
-        rgba(0,0,0,0.35) 50%,
-        rgba(0,0,0,0.65) 100%
+        to right,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,0.95) 8%,
+        rgba(0,0,0,0.8) 20%,
+        rgba(0,0,0,0.5) 38%,
+        rgba(0,0,0,0.2) 55%,
+        rgba(0,0,0,0.05) 70%,
+        transparent 85%
       );
+    }
+
+    /* Vignette — assombrit les bords, centre respire */
+    .hero-overlay::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse at center,
+        transparent 40%,
+        rgba(0,0,0,0.35) 100%
+      );
+    }
+
+    /* Grain pellicule */
+    .hero-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.045;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
       width: 100%;
-      padding: 0 48px 80px;
+      padding: 0 80px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       gap: 40px;
     }
@@ -938,6 +998,7 @@
       <source src="hero.mp4" type="video/mp4" />
     </video>
     <div class="hero-overlay"></div>
+    <div class="hero-grain"></div>
   </div>
 
   <div class="hero-content">
@@ -956,15 +1017,6 @@
       </div>
     </div>
 
-    <div class="hero-card">
-      <div class="hc-label">Invitation NFC</div>
-      <div class="hc-names">Sophie & Thomas</div>
-      <div class="hc-date">14 juin 2026 · Château de Vaux-le-Vicomte</div>
-      <div class="hc-nfc">
-        <div class="hc-nfc-dot"></div>
-        <div class="hc-nfc-text">Site de mariage ouvert ✓</div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1199,6 +1251,12 @@
     el.addEventListener('keydown', e => {
       if (e.key === 'Enter') submit(el.id);
     });
+  });
+
+  // Nav transparente → blanche au scroll
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
   });
 </script>
 </body>
