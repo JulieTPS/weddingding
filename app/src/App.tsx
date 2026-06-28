@@ -590,12 +590,12 @@ export default function App() {
                   <div className="flex flex-col gap-1 min-w-0">
                     <p className="font-serif text-white leading-tight"
                       style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
-                      Vos faire-parts sont <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>en cours de création</em>
+                      Parfait — <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>consultez vos mails</em>
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-sans font-light"
                         style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.35)' }}>
-                        Notre équipe vous contacte sous 24h ·
+                        Notre équipe prend contact avec vous sous 24h ·
                       </span>
                       <button onClick={copyLink} className="font-sans border-0 bg-transparent p-0"
                         style={{
