@@ -613,15 +613,38 @@ export default function App() {
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
               className="flex items-center gap-3 mt-6">
-              <div className="flex -space-x-1.5">
-                {['#e8826a','#a8c5b5','#c4a8c8'].map((c, i) => (
-                  <div key={i} className="w-7 h-7 rounded-full border-2 border-black/50 flex items-center justify-center font-sans text-[0.46rem] text-white"
-                    style={{ background: c }}>{['LM','CH','ST'][i]}</div>
+              {/* avatar stack — couple crème chaud, cœur au-dessus des têtes */}
+              <div className="flex -space-x-2.5">
+                {[
+                  { bg: '#f0dcc8', ic: '#b85c3a', ht: '#e8826a' },
+                  { bg: '#eedec6', ic: '#7a5c28', ht: '#c8a86e' },
+                  { bg: '#f5e6d6', ic: '#c8744a', ht: '#e8826a' },
+                  { bg: '#e8d8bc', ic: '#6e5230', ht: '#c8a86e' },
+                ].map((s, i) => (
+                  <div key={i} className="w-9 h-9 rounded-full overflow-hidden"
+                    style={{ background: s.bg, boxShadow: '0 0 0 2px #0c0b09', flexShrink: 0 }}>
+                    <svg viewBox="0 0 100 100" width="36" height="36">
+                      {/* cœur flottant au-dessus */}
+                      <path d="M50 28 C50 26 48 23 45 25 C43 26 43 30 50 35 C57 30 57 26 55 25 C52 23 50 26 50 28Z" fill={s.ht} />
+                      {/* silhouette gauche */}
+                      <circle cx="34" cy="45" r="9" fill={s.ic} />
+                      <path d="M24 56 Q34 53 44 56 L46 73 H22 Z" fill={s.ic} />
+                      {/* silhouette droite */}
+                      <circle cx="66" cy="45" r="9" fill={s.ic} opacity="0.5" />
+                      <path d="M56 56 Q66 53 76 56 L78 73 H54 Z" fill={s.ic} opacity="0.5" />
+                    </svg>
+                  </div>
                 ))}
               </div>
-              <p className="font-sans text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                47 couples déjà sur la liste d'attente
-              </p>
+              <div className="flex items-center gap-2">
+                <motion.div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                  style={{ background: '#4ade80', boxShadow: '0 0 6px rgba(74,222,128,0.6)' }}
+                  animate={{ opacity: [1, 0.25, 1], scale: [1, 1.5, 1] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }} />
+                <p className="font-sans" style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.42)', letterSpacing: '0.01em' }}>
+                  47 couples inscrits ce mois-ci
+                </p>
+              </div>
             </motion.div>
           </div>
 
