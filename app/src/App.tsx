@@ -499,7 +499,9 @@ export default function App() {
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
-    v.play().catch(() => {})
+    v.muted = true           // force muted sur le DOM — bug connu React/iOS
+    v.setAttribute('playsinline', '')
+    setTimeout(() => v.play().catch(() => {}), 100)
   }, [])
   const { scrollYProgress: hy } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroVY = useTransform(hy, [0, 1], ['0%', '25%'])
