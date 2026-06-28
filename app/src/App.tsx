@@ -570,14 +570,21 @@ export default function App() {
       </section>
 
       {/* ════ MARQUEE ════════════════════════════════════════════ */}
-      <div className="overflow-hidden" style={{ background: '#2c2c2c', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="overflow-hidden" style={{
+        background: '#0f0e0c',
+        borderTop: '1px solid rgba(255,255,255,0.04)',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+        maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%)',
+      }}>
         <div className="marquee-track">
           {[0,1].flatMap(r =>
-            ['NFC préconfigurée','100 cartes 350g','Site mariage 24 mois','iPhone 7+ · Android','RSVP temps réel','Livraison 5 jours','Puce testée à la main','QR code inclus']
+            ['Livraison en 5 jours', 'NFC · Tap pour ouvrir', 'Site inclus 24 mois', 'RSVP en temps réel', 'Fait en France']
               .map((t, i) => (
-                <div key={`${r}-${i}`} className="flex items-center gap-2.5 shrink-0 px-8 py-3">
-                  <span className="font-sans text-[0.72rem] tracking-[0.06em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.25)' }}>{t}</span>
-                  <span className="text-[0.45rem]" style={{ color: '#e8826a', opacity: 0.4 }}>◆</span>
+                <div key={`${r}-${i}`} className="flex items-center gap-4 shrink-0 px-12 py-4">
+                  <span className="font-sans text-[0.73rem] tracking-[0.1em] uppercase whitespace-nowrap"
+                    style={{ color: 'rgba(255,255,255,0.55)' }}>{t}</span>
+                  <span style={{ color: '#c8a86e', opacity: 0.6, fontSize: '0.5rem' }}>✦</span>
                 </div>
               ))
           )}

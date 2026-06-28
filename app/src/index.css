@@ -131,8 +131,7 @@ a { text-decoration: none; }
 
 /* ── Marquee ──────────────────────────────────────── */
 @keyframes marquee { to { transform: translateX(-50%); } }
-.marquee-track { animation: marquee 36s linear infinite; display: flex; width: max-content; }
-.marquee-track:hover { animation-play-state: paused; }
+.marquee-track { animation: marquee 32s linear infinite; display: flex; width: max-content; }
 
 /* ── Urgency dot ──────────────────────────────────── */
 @keyframes dot-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.6);opacity:.4} }
