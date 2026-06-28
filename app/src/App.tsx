@@ -574,8 +574,8 @@ export default function App() {
               style={{ left: '5%', width: '97%' }}>
               <source src="/hero.mp4" type="video/mp4" />
             </video>
-            {/* mobile : image statique + parallax via heroVY parent */}
-            <img src="/hero-mobile-poster.webp" alt=""
+            {/* mobile : image statique haute résolution + parallax via heroVY parent */}
+            <img src="/tap-photo.png" alt=""
               className="md:hidden absolute inset-0 w-full h-full object-cover object-center" />
           </div>
           {/* gradient left fade */}
