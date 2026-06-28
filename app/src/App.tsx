@@ -337,23 +337,26 @@ function NfcScene() {
             <div className="absolute inset-0 opacity-[0.032] pointer-events-none"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
 
-            {/* ── MOBILE : blurred bg + image contenue + texte overlay bas ── */}
-            <div className="md:hidden absolute inset-0 overflow-hidden">
-              {/* fond flouté — copie de l'image zoomée et blurée */}
-              <img src={panel.img} alt=""
-                aria-hidden="true"
+            {/* ── MOBILE : blurred bg + flexbox image/texte ── */}
+            <div className="md:hidden absolute inset-0 overflow-hidden flex flex-col">
+              {/* fond flouté */}
+              <img src={panel.img} alt="" aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ filter: 'blur(22px)', transform: 'scale(1.15)', opacity: 0.45 }} />
-              {/* assombrir le fond */}
-              <div className="absolute inset-0" style={{ background: 'rgba(12,11,9,0.55)' }} />
-              {/* image à proportion naturelle, centrée */}
-              <img src={panel.img} alt={panel.h}
-                className="absolute left-1/2 -translate-x-1/2"
-                style={{ top: '6%', maxHeight: '58vh', width: 'auto', maxWidth: '88%', objectFit: 'contain', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'block' }} />
-              {/* gradient bas pour lisibilité du texte */}
-              <div className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(12,11,9,0.98) 0%, rgba(12,11,9,0.7) 32%, transparent 58%)' }} />
-              <div className="absolute bottom-0 left-0 right-0 px-6 pb-10 flex flex-col gap-3">
+                style={{ filter: 'blur(24px)', transform: 'scale(1.2)', opacity: 0.4 }} />
+              <div className="absolute inset-0" style={{ background: 'rgba(12,11,9,0.5)' }} />
+
+              {/* zone image — flex 1 pour prendre l'espace disponible */}
+              <div className="relative flex-1 flex items-center justify-center px-6 pt-20 pb-2 z-10">
+                <img src={panel.img} alt={panel.h}
+                  style={{ maxHeight: '100%', width: 'auto', maxWidth: '100%', objectFit: 'contain', borderRadius: 14, boxShadow: '0 16px 48px rgba(0,0,0,0.55)', display: 'block' }} />
+              </div>
+
+              {/* gradient de transition */}
+              <div className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+                style={{ background: 'linear-gradient(to top, rgba(12,11,9,1) 0%, rgba(12,11,9,0.7) 60%, transparent 100%)' }} />
+
+              {/* zone texte — hauteur fixe en bas */}
+              <div className="relative z-10 px-6 pb-10 pt-4 flex flex-col gap-2.5 shrink-0">
                 <span className="font-sans text-[0.58rem] tracking-[0.26em] uppercase"
                   style={{ color: '#e8826a' }}>{panel.n} — Comment ça marche</span>
                 <h2 className="font-serif leading-[1.05]"
