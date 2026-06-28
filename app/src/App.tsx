@@ -337,37 +337,67 @@ function NfcScene() {
             <div className="absolute inset-0 opacity-[0.032] pointer-events-none"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
 
-            {/* layout éditorial : texte gauche + image droite */}
-            <div className="absolute inset-0 flex items-center justify-between px-8 md:px-16 gap-8 md:gap-16">
+            {/* layout : colonne mobile / ligne desktop */}
+            <div className="absolute inset-0 flex flex-col md:flex-row items-center justify-center md:justify-between px-6 md:px-16 gap-4 md:gap-16 pt-16 pb-6 md:py-0">
 
-              {/* texte gauche */}
-              <div className="flex flex-col gap-4 max-w-sm shrink-0 z-10">
+              {/* image — haut sur mobile, droite sur desktop */}
+              <div className="flex-1 flex items-center justify-center md:justify-end w-full md:h-full z-10 order-1 md:order-2">
+                <div className="relative">
+                  <img src={panel.img} alt={panel.h}
+                    className="rounded-2xl"
+                    style={{
+                      maxHeight: 'min(48vh, 380px)',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      objectFit: 'contain',
+                      boxShadow: '0 24px 64px rgba(0,0,0,0.65)',
+                      display: 'block',
+                    }} />
+
+                  {/* anneaux NFC + callout — panel 2, desktop only */}
+                  {i === 1 && (
+                    <div className="absolute inset-0 pointer-events-none hidden md:block">
+                      <div className="absolute" style={{ left: '38%', top: '82%' }}>
+                        {[0, 1, 2].map(j => (
+                          <div key={j} className="nfc-ring absolute rounded-full"
+                            style={{ width: 48, height: 48, top: -24, left: -24, border: '1px solid rgba(232,130,106,0.5)', animationDelay: `${j * 0.7}s` }} />
+                        ))}
+                        <div className="absolute rounded-full"
+                          style={{ width: 8, height: 8, top: -4, left: -4, background: '#e8826a', boxShadow: '0 0 0 3px rgba(232,130,106,0.2), 0 0 12px rgba(232,130,106,0.6)' }} />
+                        <svg className="absolute" style={{ left: -100, top: -58, overflow: 'visible', pointerEvents: 'none' }} width="100" height="58" viewBox="0 0 100 58">
+                          <line x1="100" y1="58" x2="12" y2="6" stroke="rgba(232,130,106,0.4)" strokeWidth="0.8" />
+                          <circle cx="12" cy="6" r="2" fill="rgba(232,130,106,0.6)" />
+                        </svg>
+                        <div className="absolute flex items-center gap-1.5 font-sans whitespace-nowrap"
+                          style={{ left: -196, top: -72, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(237,232,222,0.9)', background: 'rgba(18,16,13,0.82)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '4px 10px 4px 8px', borderRadius: 999, border: '1px solid rgba(232,130,106,0.4)' }}>
+                          <span className="rounded-full inline-block" style={{ width: 5, height: 5, background: '#e8826a', flexShrink: 0 }} />
+                          Votre site, caché ici
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* texte — bas sur mobile, gauche sur desktop */}
+              <div className="flex flex-col gap-2 md:gap-4 max-w-sm shrink-0 z-10 order-2 md:order-1 text-center md:text-left items-center md:items-start">
                 <span className="font-sans text-[0.58rem] tracking-[0.26em] uppercase"
                   style={{ color: '#e8826a' }}>{panel.n} — Comment ça marche</span>
                 <h2 className="font-serif leading-[1.05]"
-                  style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)', color: '#ede8de' }}>
+                  style={{ fontSize: 'clamp(1.4rem, 3.5vw, 3rem)', color: '#ede8de' }}>
                   {panel.h}
                 </h2>
-                <p className="font-sans font-light leading-relaxed text-[0.9rem]"
+                <p className="font-sans font-light leading-relaxed text-[0.82rem] md:text-[0.9rem]"
                   style={{ color: 'rgba(237,232,222,0.5)' }}>
                   {panel.b}
                 </p>
 
                 {i === 2 && (
                   <motion.a href="#contact"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.3, ease: [0.22,1,0.36,1] }}
-                    className="inline-flex items-center gap-2 self-start mt-2 font-sans text-[0.82rem] tracking-wide"
-                    style={{
-                      background: '#e8826a',
-                      color: '#fff',
-                      padding: '0.7rem 1.4rem',
-                      borderRadius: 999,
-                      fontWeight: 500,
-                      boxShadow: '0 8px 32px rgba(232,130,106,0.35)',
-                      textDecoration: 'none',
-                    }}>
+                    className="inline-flex items-center gap-2 mt-2 font-sans text-[0.82rem] tracking-wide"
+                    style={{ background: '#e8826a', color: '#fff', padding: '0.7rem 1.4rem', borderRadius: 999, fontWeight: 500, boxShadow: '0 8px 32px rgba(232,130,106,0.35)', textDecoration: 'none' }}>
                     Créer mes faire-parts
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                       <path d="M5 12h14M13 6l6 6-6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -376,80 +406,7 @@ function NfcScene() {
                 )}
               </div>
 
-              {/* image à proportion naturelle, droite */}
-              <div className="flex-1 flex items-center justify-center md:justify-end h-full py-10 z-10">
-                <div className="relative" style={{ maxHeight: '82vh' }}>
-                  <img src={panel.img} alt={panel.h}
-                    className="rounded-2xl"
-                    style={{
-                      maxHeight: '82vh',
-                      maxWidth: '100%',
-                      width: 'auto',
-                      objectFit: 'contain',
-                      boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
-                      display: 'block',
-                    }} />
-
-                  {/* anneaux NFC + callout — panel 2 uniquement */}
-                  {i === 1 && (
-                    <div className="absolute inset-0 pointer-events-none">
-
-                      {/* annotation NFC — positionné sur le sticker de la carte */}
-                      <div className="absolute" style={{ left: '38%', top: '82%' }}>
-
-                        {/* anneaux pulsants */}
-                        {[0, 1, 2].map(j => (
-                          <div key={j} className="nfc-ring absolute rounded-full"
-                            style={{
-                              width: 48, height: 48,
-                              top: -24, left: -24,
-                              border: '1px solid rgba(232,130,106,0.5)',
-                              animationDelay: `${j * 0.7}s`,
-                            }} />
-                        ))}
-
-                        {/* point central avec halo */}
-                        <div className="absolute rounded-full"
-                          style={{
-                            width: 8, height: 8,
-                            top: -4, left: -4,
-                            background: '#e8826a',
-                            boxShadow: '0 0 0 3px rgba(232,130,106,0.2), 0 0 12px rgba(232,130,106,0.6)',
-                          }} />
-
-                        {/* SVG ligne fine vers le label */}
-                        <svg className="absolute" style={{ left: -100, top: -58, overflow: 'visible', pointerEvents: 'none' }}
-                          width="100" height="58" viewBox="0 0 100 58">
-                          <line x1="100" y1="58" x2="12" y2="6"
-                            stroke="rgba(232,130,106,0.4)" strokeWidth="0.8" />
-                          <circle cx="12" cy="6" r="2" fill="rgba(232,130,106,0.6)" />
-                        </svg>
-
-                        {/* label pill */}
-                        <div className="absolute flex items-center gap-1.5 font-sans whitespace-nowrap"
-                          style={{
-                            left: -196, top: -72,
-                            fontSize: '0.6rem',
-                            letterSpacing: '0.14em',
-                            textTransform: 'uppercase',
-                            color: 'rgba(237,232,222,0.9)',
-                            background: 'rgba(18,16,13,0.82)',
-                            backdropFilter: 'blur(12px)',
-                            WebkitBackdropFilter: 'blur(12px)',
-                            padding: '4px 10px 4px 8px',
-                            borderRadius: 999,
-                            border: '1px solid rgba(232,130,106,0.4)',
-                          }}>
-                          <span className="rounded-full inline-block"
-                            style={{ width: 5, height: 5, background: '#e8826a', flexShrink: 0 }} />
-                          Votre site, caché ici
-                        </div>
-
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+            </div>
 
             </div>
 
