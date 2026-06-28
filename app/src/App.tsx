@@ -551,10 +551,15 @@ export default function App() {
 
         </motion.div>
 
-        {/* scroll caret */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <div className="w-px h-9 scroll-line" style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.45), transparent)' }} />
-        </div>
+        {/* scroll indicator — chevron élégant */}
+        <motion.div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] pointer-events-none"
+          style={{ opacity: heroOp }}>
+          <motion.svg width="18" height="10" viewBox="0 0 18 10" fill="none"
+            animate={{ y: [0, 4, 0], opacity: [0.45, 0.9, 0.45] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}>
+            <path d="M1 1 L9 9 L17 1" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </motion.svg>
+        </motion.div>
       </section>
 
       {/* ════ MARQUEE ════════════════════════════════════════════ */}
