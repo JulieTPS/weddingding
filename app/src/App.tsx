@@ -6,6 +6,10 @@ import {
 import Lenis from 'lenis'
 import './index.css'
 
+// Module-level burst trigger — partagé entre Cursor et le form
+let _burstFn: ((x: number, y: number, n: number) => void) | null = null
+function triggerSparkles(x: number, y: number, n = 32) { _burstFn?.(x, y, n) }
+
 /* ─── palette ────────────────────────────────────────────────
    coral   #e8826a  |  coral-light #fdf0ec
    dark    #2c2c2c  |  gray        #7a7a7a
@@ -156,8 +160,10 @@ function Cursor() {
       rafId = requestAnimationFrame(loop)
     }
     rafId = requestAnimationFrame(loop)
+    _burstFn = spawn
 
     return () => {
+      _burstFn = null
       window.removeEventListener('resize', resize)
       window.removeEventListener('mousemove', onMove)
       window.removeEventListener('click', onClick)
@@ -392,7 +398,16 @@ export default function App() {
   useLenis()
 
   const [email, setEmail]   = useState('')
-  const [toast, setToast]   = useState(false)
+  const [sent, setSent]     = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [position]          = useState(() => 44 + Math.floor(Math.random() * 14))
+  const formRef             = useRef<HTMLFormElement>(null)
+
+  const copyLink = () => {
+    navigator.clipboard.writeText('https://weddingding.fr').then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2200)
+    })
+  }
   const [faq, setFaq]       = useState<number | null>(null)
   const [scrolled, setScrolled] = useState(false)
 
@@ -410,7 +425,11 @@ export default function App() {
   const send = (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.includes('@')) return
-    setEmail(''); setToast(true); setTimeout(() => setToast(false), 3500)
+    if (formRef.current) {
+      const r = formRef.current.getBoundingClientRect()
+      triggerSparkles(r.left + r.width / 2, r.top + r.height / 2, 38)
+    }
+    setEmail(''); setSent(true)
   }
 
   return (
@@ -519,28 +538,76 @@ export default function App() {
               100 faire-parts NFC premium + site de mariage inclus. Vos invités approchent leur téléphone — votre site s'ouvre instantanément.
             </motion.p>
 
-            <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.82, duration: 0.6 }} onSubmit={send}
-              className="flex gap-2.5 flex-wrap">
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="votre@email.fr"
-                className="font-sans flex-1 min-w-[200px] rounded-full outline-none border-0"
-                style={{ background: 'rgba(255,255,255,0.95)', color: '#2c2c2c', padding: '14px 20px', fontSize: '0.9rem' }} />
-              <motion.button type="submit"
-                className="font-sans font-medium rounded-full border-0 whitespace-nowrap relative overflow-hidden"
-                style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}
-                whileHover="hover" initial="rest"
-                variants={{
-                  rest: { boxShadow: '0 4px 18px rgba(232,130,106,0.25)' },
-                  hover: { boxShadow: '0 6px 28px rgba(232,130,106,0.55)', transition: { duration: 0.3 } },
-                }}>
-                {/* shimmer */}
-                <motion.span className="absolute inset-0 pointer-events-none"
-                  style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.38) 50%, transparent 70%)', x: '-120%' }}
-                  variants={{ rest: { x: '-120%' }, hover: { x: '120%', transition: { duration: 0.5, ease: 'easeInOut' } } }} />
-                Réserver ma place
-              </motion.button>
-            </motion.form>
+            <AnimatePresence mode="wait">
+              {!sent ? (
+                <motion.form key="form" ref={formRef}
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ delay: 0.82, duration: 0.6 }} onSubmit={send}
+                  className="flex gap-2.5 flex-wrap">
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder="votre@email.fr"
+                    className="font-sans flex-1 min-w-[200px] rounded-full outline-none border-0"
+                    style={{ background: 'rgba(255,255,255,0.95)', color: '#2c2c2c', padding: '14px 20px', fontSize: '0.9rem' }} />
+                  <motion.button type="submit"
+                    className="font-sans font-medium rounded-full border-0 whitespace-nowrap relative overflow-hidden"
+                    style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}
+                    whileHover="hover" initial="rest"
+                    variants={{
+                      rest: { boxShadow: '0 4px 18px rgba(232,130,106,0.25)' },
+                      hover: { boxShadow: '0 6px 28px rgba(232,130,106,0.55)', transition: { duration: 0.3 } },
+                    }}>
+                    <motion.span className="absolute inset-0 pointer-events-none"
+                      style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.38) 50%, transparent 70%)', x: '-120%' }}
+                      variants={{ rest: { x: '-120%' }, hover: { x: '120%', transition: { duration: 0.5, ease: 'easeInOut' } } }} />
+                    Réserver ma place
+                  </motion.button>
+                </motion.form>
+              ) : (
+                <motion.div key="success"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: EASE }}
+                  className="flex items-center gap-4">
+                  {/* cercle + check — langage visuel cursor ring */}
+                  <svg viewBox="0 0 44 44" fill="none" style={{ width: 44, height: 44, flexShrink: 0 }}>
+                    <circle cx="22" cy="22" r="20" stroke="rgba(232,130,106,0.15)" strokeWidth="1" />
+                    <motion.circle cx="22" cy="22" r="20"
+                      stroke="#e8826a" strokeWidth="1.1" strokeLinecap="round"
+                      style={{ filter: 'drop-shadow(0 0 4px rgba(232,130,106,0.5))' }}
+                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.65, ease: EASE }} />
+                    <motion.path d="M13 22 L20 29 L31 16"
+                      stroke="#e8826a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                      initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.35, delay: 0.58, ease: EASE }} />
+                  </svg>
+
+                  {/* texte + bouton partage */}
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <p className="font-serif text-white leading-tight"
+                      style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
+                      Votre place est <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>réservée</em>
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-sans font-light"
+                        style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.35)' }}>
+                        Parmi les {position} premiers ·
+                      </span>
+                      <button onClick={copyLink}
+                        className="font-sans border-0 bg-transparent p-0"
+                        style={{
+                          fontSize: '0.74rem', letterSpacing: '0.02em',
+                          color: copied ? '#e8826a' : 'rgba(255,255,255,0.5)',
+                          textDecoration: 'underline', textUnderlineOffset: 3,
+                          cursor: 'pointer', transition: 'color .2s',
+                        }}>
+                        {copied ? '✦ lien copié' : 'partager le lien'}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
               className="flex items-center gap-3 mt-6">
@@ -1009,17 +1076,6 @@ export default function App() {
         <p className="font-sans text-xs" style={{ color: 'rgba(255,255,255,0.12)' }}>© 2026 WeddingDing · Fait avec ♥ en France</p>
       </footer>
 
-      {/* ════ TOAST ══════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: 14, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 14, scale: 0.96 }} transition={{ duration: 0.3, ease: EASE }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 font-sans font-medium text-sm text-white rounded-full whitespace-nowrap"
-            style={{ background: 'rgba(34,197,94,0.9)', backdropFilter: 'blur(12px)', padding: '14px 28px', boxShadow: '0 8px 32px rgba(0,0,0,0.2)' }}>
-            ✓ Parfait — je vous contacte dans les 24h.
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   )
 }
