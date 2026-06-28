@@ -400,7 +400,7 @@ export default function App() {
   const [email, setEmail]   = useState('')
   const [sent, setSent]     = useState(false)
   const [copied, setCopied] = useState(false)
-  const [position]          = useState(() => 44 + Math.floor(Math.random() * 14))
+
   const formRef             = useRef<HTMLFormElement>(null)
 
   const copyLink = () => {
@@ -464,7 +464,7 @@ export default function App() {
             style={scrolled
               ? { background: '#e8826a', color: 'white', border: '1.5px solid #e8826a' }
               : { background: 'transparent', color: 'white', border: '1.5px solid rgba(255,255,255,0.7)' }}>
-            Réserver
+            Démarrer
           </a>
         </Mag>
       </header>
@@ -540,35 +540,41 @@ export default function App() {
 
             <AnimatePresence mode="wait">
               {!sent ? (
-                <motion.form key="form" ref={formRef}
+                <motion.div key="form-wrap"
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  transition={{ delay: 0.82, duration: 0.6 }} onSubmit={send}
-                  className="flex gap-2.5 flex-wrap">
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    placeholder="votre@email.fr"
-                    className="font-sans flex-1 min-w-[200px] rounded-full outline-none border-0"
-                    style={{ background: 'rgba(255,255,255,0.95)', color: '#2c2c2c', padding: '14px 20px', fontSize: '0.9rem' }} />
-                  <motion.button type="submit"
-                    className="font-sans font-medium rounded-full border-0 whitespace-nowrap relative overflow-hidden"
-                    style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}
-                    whileHover="hover" initial="rest"
-                    variants={{
-                      rest: { boxShadow: '0 4px 18px rgba(232,130,106,0.25)' },
-                      hover: { boxShadow: '0 6px 28px rgba(232,130,106,0.55)', transition: { duration: 0.3 } },
-                    }}>
-                    <motion.span className="absolute inset-0 pointer-events-none"
-                      style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.38) 50%, transparent 70%)', x: '-120%' }}
-                      variants={{ rest: { x: '-120%' }, hover: { x: '120%', transition: { duration: 0.5, ease: 'easeInOut' } } }} />
-                    Réserver ma place
-                  </motion.button>
-                </motion.form>
+                  transition={{ delay: 0.82, duration: 0.6 }}
+                  className="flex flex-col gap-2">
+                  <form ref={formRef} onSubmit={send} className="flex gap-2.5 flex-wrap">
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                      placeholder="votre@email.fr"
+                      className="font-sans flex-1 min-w-[200px] rounded-full outline-none border-0"
+                      style={{ background: 'rgba(255,255,255,0.95)', color: '#2c2c2c', padding: '14px 20px', fontSize: '0.9rem' }} />
+                    <motion.button type="submit"
+                      className="font-sans font-medium rounded-full border-0 whitespace-nowrap relative overflow-hidden"
+                      style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}
+                      whileHover="hover" initial="rest"
+                      variants={{
+                        rest: { boxShadow: '0 4px 18px rgba(232,130,106,0.25)' },
+                        hover: { boxShadow: '0 6px 28px rgba(232,130,106,0.55)', transition: { duration: 0.3 } },
+                      }}>
+                      <motion.span className="absolute inset-0 pointer-events-none"
+                        style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.38) 50%, transparent 70%)', x: '-120%' }}
+                        variants={{ rest: { x: '-120%' }, hover: { x: '120%', transition: { duration: 0.5, ease: 'easeInOut' } } }} />
+                      Créer mes faire-parts
+                    </motion.button>
+                  </form>
+                  {/* micro-copy réassurance */}
+                  <p className="font-sans font-light"
+                    style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.02em' }}>
+                    Livraison estimée printemps 2026 · Accompagnement personnalisé
+                  </p>
+                </motion.div>
               ) : (
                 <motion.div key="success"
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, ease: EASE }}
                   className="flex items-center gap-4">
-                  {/* cercle + check — langage visuel cursor ring */}
                   <svg viewBox="0 0 44 44" fill="none" style={{ width: 44, height: 44, flexShrink: 0 }}>
                     <circle cx="22" cy="22" r="20" stroke="rgba(232,130,106,0.15)" strokeWidth="1" />
                     <motion.circle cx="22" cy="22" r="20"
@@ -581,23 +587,19 @@ export default function App() {
                       initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                       transition={{ duration: 0.35, delay: 0.58, ease: EASE }} />
                   </svg>
-
-                  {/* texte + bouton partage */}
                   <div className="flex flex-col gap-1 min-w-0">
                     <p className="font-serif text-white leading-tight"
                       style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
-                      Votre place est <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>réservée</em>
+                      Vos faire-parts sont <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>en cours de création</em>
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-sans font-light"
                         style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.35)' }}>
-                        Parmi les {position} premiers ·
+                        Notre équipe vous contacte sous 24h ·
                       </span>
-                      <button onClick={copyLink}
-                        className="font-sans border-0 bg-transparent p-0"
+                      <button onClick={copyLink} className="font-sans border-0 bg-transparent p-0"
                         style={{
-                          fontSize: '0.74rem', letterSpacing: '0.02em',
-                          color: copied ? '#e8826a' : 'rgba(255,255,255,0.5)',
+                          fontSize: '0.74rem', color: copied ? '#e8826a' : 'rgba(255,255,255,0.5)',
                           textDecoration: 'underline', textUnderlineOffset: 3,
                           cursor: 'pointer', transition: 'color .2s',
                         }}>
@@ -911,7 +913,7 @@ export default function App() {
                 cta: 'Je veux ce tarif', hi: false },
               { tier: 'Premium', price: '199', note: 'Bientôt 299€', sub: 'Prix de lancement',
                 feats: ['100 cartes NFC 350g','Sticker 3D époxy (luxe)','Site mariage 24 mois','RSVP · Galerie · Livre d\'or','Compte à rebours','Support prioritaire'],
-                cta: 'Réserver ma place →', hi: true, badge: 'Le plus choisi' },
+                cta: 'Créer mes faire-parts →', hi: true, badge: 'Le plus choisi' },
               { tier: 'Prestige', price: '279', note: 'La clé de votre mariage', sub: 'Packaging collector',
                 feats: ['100 cartes + carte NFC plastique','Format carte hôtel premium','Packaging soigné inclus','Site complet 24 mois','Support VIP dédié'],
                 cta: 'Me contacter', hi: false },
@@ -1047,7 +1049,7 @@ export default function App() {
             <Mag>
               <button type="submit" data-mag className="font-sans font-medium rounded-full border-0 whitespace-nowrap"
                 style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}>
-                Réserver ma place
+                Créer mes faire-parts
               </button>
             </Mag>
           </motion.form>
