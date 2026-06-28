@@ -526,13 +526,20 @@ export default function App() {
                 placeholder="votre@email.fr"
                 className="font-sans flex-1 min-w-[200px] rounded-full outline-none border-0"
                 style={{ background: 'rgba(255,255,255,0.95)', color: '#2c2c2c', padding: '14px 20px', fontSize: '0.9rem' }} />
-              <Mag>
-                <button type="submit" data-mag
-                  className="font-sans font-medium rounded-full border-0 whitespace-nowrap"
-                  style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}>
-                  Réserver ma place
-                </button>
-              </Mag>
+              <motion.button type="submit"
+                className="font-sans font-medium rounded-full border-0 whitespace-nowrap relative overflow-hidden"
+                style={{ background: '#e8826a', color: 'white', padding: '14px 28px', fontSize: '0.9rem', cursor: 'pointer' }}
+                whileHover="hover" initial="rest"
+                variants={{
+                  rest: { boxShadow: '0 4px 18px rgba(232,130,106,0.25)' },
+                  hover: { boxShadow: '0 6px 28px rgba(232,130,106,0.55)', transition: { duration: 0.3 } },
+                }}>
+                {/* shimmer */}
+                <motion.span className="absolute inset-0 pointer-events-none"
+                  style={{ background: 'linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.38) 50%, transparent 70%)', x: '-120%' }}
+                  variants={{ rest: { x: '-120%' }, hover: { x: '120%', transition: { duration: 0.5, ease: 'easeInOut' } } }} />
+                Réserver ma place
+              </motion.button>
             </motion.form>
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
