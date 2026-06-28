@@ -495,6 +495,12 @@ export default function App() {
   }, [])
 
   const heroRef = useRef(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v) return
+    v.play().catch(() => {})
+  }, [])
   const { scrollYProgress: hy } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroVY = useTransform(hy, [0, 1], ['0%', '25%'])
   const heroOp = useTransform(hy, [0, 0.7], [1, 0])
@@ -558,7 +564,7 @@ export default function App() {
         {/* video + overlays */}
         <motion.div className="absolute inset-0" style={{ y: heroVY }}>
           <div className="absolute inset-0 bg-black" />
-          <video autoPlay muted loop playsInline preload="auto"
+          <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
             style={{ filter: 'brightness(0.92) contrast(1.08) saturate(0.82)', left: '5%', width: '97%' }}>
             <source src="/hero.mp4" type="video/mp4" />
