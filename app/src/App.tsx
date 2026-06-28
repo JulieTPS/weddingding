@@ -574,9 +574,10 @@ export default function App() {
               style={{ left: '5%', width: '97%' }}>
               <source src="/hero.mp4" type="video/mp4" />
             </video>
-            {/* mobile : animated webp */}
+            {/* mobile : animated webp (à placer dans public/ via ezgif) */}
             <img src="/hero-mobile.webp" alt=""
-              className="md:hidden absolute inset-0 w-full h-full object-cover" />
+              className="md:hidden absolute inset-0 w-full h-full object-cover"
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }} />
           </div>
           {/* gradient left fade */}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 8%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 38%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.05) 70%, transparent 85%)' }} />
