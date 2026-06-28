@@ -352,6 +352,28 @@ function NfcScene() {
                   style={{ color: 'rgba(237,232,222,0.5)' }}>
                   {panel.b}
                 </p>
+
+                {i === 2 && (
+                  <motion.a href="#contact"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3, ease: [0.22,1,0.36,1] }}
+                    className="inline-flex items-center gap-2 self-start mt-2 font-sans text-[0.82rem] tracking-wide"
+                    style={{
+                      background: '#e8826a',
+                      color: '#fff',
+                      padding: '0.7rem 1.4rem',
+                      borderRadius: 999,
+                      fontWeight: 500,
+                      boxShadow: '0 8px 32px rgba(232,130,106,0.35)',
+                      textDecoration: 'none',
+                    }}>
+                    Créer mes faire-parts
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12h14M13 6l6 6-6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </motion.a>
+                )}
               </div>
 
               {/* image à proportion naturelle, droite */}
