@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Branding — WeddingDing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Yeseva+One&family=Abril+Fatface&family=Tenor+Sans&family=Viaoda+Libre&family=Josefin+Slab:ital,wght@0,100;0,300;1,100;1,300&family=Playfair+Display+SC:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Libre+Caslon+Display&family=Unbounded:wght@200;300;400&family=Pirata+One&family=Syne+Mono&family=Space+Mono:ital@0;1&family=Azeret+Mono:wght@300;400&family=Martian+Mono:wght@300;400&family=Xanh+Mono:ital@0;1&family=Fragment+Mono&family=Cutive+Mono&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Chivo+Mono:ital,wght@0,300;0,400;1,300&family=Courier+Prime:ital@0;1&family=Share+Tech+Mono&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Italiana&family=Gilda+Display&family=Marcellus&family=Rufina&family=Cinzel:wght@400&family=Josefin+Sans:wght@300;400&family=Raleway:ital,wght@0,200;1,200&family=Oranienbaum:ital@0;1&family=DM+Serif+Text:ital@0;1&family=Spectral:ital,wght@0,300;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Fontshare (fonts premium gratuites) -->
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=cabinet-grotesk@100,200,300,400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0e0e0e;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      padding: 40px 24px 120px;
+    }
+
+    .top {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .top h1 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .top p {
+      font-size: 0.78rem;
+      color: #444;
+    }
+
+    .source-label {
+      display: inline-block;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+    .src-google { background: #1a1a1a; color: #666; border: 1px solid #2a2a2a; }
+    .src-fontshare { background: #1a1220; color: #9a6fff; border: 1px solid #2a1a4a; }
+
+    .section-title {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #444;
+      margin: 48px 0 20px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #141414;
+      border-radius: 20px;
+      padding: 32px 28px 24px;
+      cursor: pointer;
+      border: 1.5px solid #1e1e1e;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(232,130,106,0.06), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover { border-color: #333; background: #181818; }
+    .card:hover::before { opacity: 1; }
+    .card.selected { border-color: #e8826a; background: #1a1210; }
+    .card.selected::before { opacity: 1; }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .card-name {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #444;
+    }
+
+    .tag {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+    .t-wow { background: #1f1500; color: #e8a96a; border: 1px solid #3a2500; }
+    .t-art { background: #0f1a20; color: #6ab4e8; border: 1px solid #1a3040; }
+    .t-brand { background: #150f1f; color: #b06ae8; border: 1px solid #301a40; }
+    .t-niche { background: #0f1a10; color: #6ae880; border: 1px solid #1a3020; }
+
+    .preview-title {
+      line-height: 1.1;
+      margin-bottom: 16px;
+      color: #ffffff;
+    }
+
+    .preview-sub {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.6;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      margin-bottom: 20px;
+    }
+
+    .preview-bottom {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid #1e1e1e;
+      padding-top: 16px;
+    }
+
+    .preview-cta {
+      font-size: 0.72rem;
+      background: #e8826a;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 100px;
+      white-space: nowrap;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+    }
+
+    .preview-brand {
+      font-size: 0.75rem;
+      color: #3a3a3a;
+    }
+
+    .check {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 22px;
+      height: 22px;
+      background: #e8826a;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.65rem;
+    }
+    .card.selected .check { display: flex; }
+
+    /* STICKY */
+    .bar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: white;
+      color: #1a1a1a;
+      padding: 16px 28px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .bar.show { transform: translateX(-50%) translateY(0); }
+    .bar strong { color: #e8826a; }
+    .bar button {
+      background: #e8826a;
+      border: none;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top">
+  <h1>Font Explorer — Branding WeddingDing</h1>
+  <p>Clique sur celle qui te fait de l'effet</p>
+</div>
+
+<!-- FONTSHARE — fonts de designers -->
+<div class="section-title">✦ Fontshare — polices de designers (gratuites · commerciales)</div>
+<div class="grid">
+
+  <div class="card" onclick="sel(this,'Clash Display')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Clash Display</span>
+      <span class="tag t-wow">WOW · Tendance 2026</span>
+    </div>
+    <div class="preview-title" style="font-family:'Clash Display',sans-serif; font-size:2.8rem; font-weight:600; letter-spacing:-0.03em;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Clash Display',sans-serif; font-size:0.8rem; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Cabinet Grotesk')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Cabinet Grotesk</span>
+      <span class="tag t-brand">Branding Pro</span>
+    </div>
+    <div class="preview-title" style="font-family:'Cabinet Grotesk',sans-serif; font-size:2.6rem; font-weight:800; letter-spacing:-0.04em;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Cabinet Grotesk',sans-serif; font-weight:300;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Cabinet Grotesk',sans-serif; font-weight:300; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Satoshi')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Satoshi</span>
+      <span class="tag t-niche">Clean · Premium</span>
+    </div>
+    <div class="preview-title" style="font-family:'Satoshi',sans-serif; font-size:2.6rem; font-weight:700; letter-spacing:-0.03em;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Satoshi',sans-serif; font-weight:300;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Satoshi',sans-serif; font-weight:300; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GOOGLE FONTS — display & niche -->
+<div class="section-title" style="margin-top:40px;">✦ Google Fonts — display artistiques</div>
+<div class="grid">
+
+  <div class="card" onclick="sel(this,'Syne')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Syne</span>
+      <span class="tag t-wow">Variable · Agencies</span>
+    </div>
+    <div class="preview-title" style="font-family:'Syne',sans-serif; font-size:2.8rem; font-weight:800; letter-spacing:-0.02em;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Syne',sans-serif; font-weight:400;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Syne',sans-serif; font-weight:400; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Unbounded')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Unbounded</span>
+      <span class="tag t-art">Futur · Spatial</span>
+    </div>
+    <div class="preview-title" style="font-family:'Unbounded',sans-serif; font-size:1.9rem; font-weight:300; letter-spacing:-0.01em; line-height:1.2;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Unbounded',sans-serif; font-size:0.6rem; color:#555;">SOPHIE & THOMAS · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Abril Fatface')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Abril Fatface</span>
+      <span class="tag t-wow">Impact · Poster</span>
+    </div>
+    <div class="preview-title" style="font-family:'Abril Fatface',serif; font-size:3rem; font-weight:400; line-height:1.05;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Abril Fatface',serif; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Yeseva One')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Yeseva One</span>
+      <span class="tag t-niche">Calligraphique · Rare</span>
+    </div>
+    <div class="preview-title" style="font-family:'Yeseva One',serif; font-size:2.6rem; font-weight:400; line-height:1.1;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Yeseva One',serif; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Bebas Neue')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Bebas Neue</span>
+      <span class="tag t-brand">All-caps · Force</span>
+    </div>
+    <div class="preview-title" style="font-family:'Bebas Neue',sans-serif; font-size:3.5rem; font-weight:400; letter-spacing:0.04em; line-height:1;">
+      VOTRE MARIAGE,<br/>À UN TAP.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Bebas Neue',sans-serif; letter-spacing:0.1em; color:#555;">SOPHIE & THOMAS · 14 JUIN 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Viaoda Libre')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Viaoda Libre</span>
+      <span class="tag t-art">Ornamental · Unique</span>
+    </div>
+    <div class="preview-title" style="font-family:'Viaoda Libre',serif; font-size:2.6rem; font-weight:400; line-height:1.1;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Viaoda Libre',serif; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Tenor Sans')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Tenor Sans</span>
+      <span class="tag t-niche">Parisien · Fin</span>
+    </div>
+    <div class="preview-title" style="font-family:'Tenor Sans',sans-serif; font-size:2.4rem; font-weight:400; letter-spacing:0.02em;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Tenor Sans',sans-serif;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Tenor Sans',sans-serif; color:#555; letter-spacing:0.05em;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Josefin Slab')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Josefin Slab</span>
+      <span class="tag t-art">Géo · Vintage poster</span>
+    </div>
+    <div class="preview-title" style="font-family:'Josefin Slab',serif; font-size:2.4rem; font-weight:100; letter-spacing:0.06em; line-height:1.2;">
+      VOTRE MARIAGE,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Josefin Slab',serif; font-weight:100; letter-spacing:0.04em;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Josefin Slab',serif; font-weight:100; letter-spacing:0.08em; color:#555;">SOPHIE & THOMAS</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Playfair Display SC')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Playfair Display SC</span>
+      <span class="tag t-brand">Small Caps · Luxe</span>
+    </div>
+    <div class="preview-title" style="font-family:'Playfair Display SC',serif; font-size:2.2rem; font-weight:400; letter-spacing:0.01em; line-height:1.2;">
+      Votre Mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Playfair Display SC',serif; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Libre Caslon Display')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Libre Caslon Display</span>
+      <span class="tag t-wow">American · Editorial</span>
+    </div>
+    <div class="preview-title" style="font-family:'Libre Caslon Display',serif; font-size:2.6rem; font-weight:400; line-height:1.1;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Libre Caslon Display',serif; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Syne Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Syne Mono</span>
+      <span class="tag t-art">Mono · Artsy · NFC</span>
+    </div>
+    <div class="preview-title" style="font-family:'Syne Mono',monospace; font-size:1.8rem; font-weight:400; line-height:1.3;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Syne Mono',monospace; font-size:0.75rem;">100 faire-parts NFC faits à la main. Site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Syne Mono',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas_</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Pirata One')">
+    <div class="check">✓</div>
+    <div class="card-meta">
+      <span class="card-name">Pirata One</span>
+      <span class="tag t-niche">Inattendu · Bold</span>
+    </div>
+    <div class="preview-title" style="font-family:'Pirata One',serif; font-size:2.8rem; font-weight:400; line-height:1.05;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Pirata One',serif; color:#555;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MONO & TECH -->
+<div class="section-title" style="margin-top:40px;">✦ Mono & Tech — dans le style Syne Mono</div>
+<div class="grid">
+
+  <div class="card" onclick="sel(this,'Syne Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Syne Mono</span><span class="tag t-wow">Actuel · Sélectionné</span></div>
+    <div class="preview-title" style="font-family:'Syne Mono',monospace; font-size:1.9rem; line-height:1.25;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Syne Mono',monospace; font-size:0.72rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Syne Mono',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas_</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Space Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Space Mono</span><span class="tag t-art">NASA · Spatial</span></div>
+    <div class="preview-title" style="font-family:'Space Mono',monospace; font-size:1.7rem; line-height:1.25;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Space Mono',monospace; font-size:0.7rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Space Mono',monospace; font-size:0.62rem; color:#555;">Sophie & Thomas_</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Azeret Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Azeret Mono</span><span class="tag t-brand">Géo · Précis</span></div>
+    <div class="preview-title" style="font-family:'Azeret Mono',monospace; font-size:1.7rem; font-weight:300; line-height:1.3;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Azeret Mono',monospace; font-size:0.7rem; font-weight:300;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Azeret Mono',monospace; font-size:0.62rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Martian Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Martian Mono</span><span class="tag t-wow">Distinctif · Rare</span></div>
+    <div class="preview-title" style="font-family:'Martian Mono',monospace; font-size:1.55rem; font-weight:300; line-height:1.35;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Martian Mono',monospace; font-size:0.68rem; font-weight:300;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Martian Mono',monospace; font-size:0.6rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Xanh Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Xanh Mono</span><span class="tag t-niche">Mono Serif · Unique</span></div>
+    <div class="preview-title" style="font-family:'Xanh Mono',monospace; font-size:1.9rem; line-height:1.25;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Xanh Mono',monospace; font-size:0.72rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Xanh Mono',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Fragment Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Fragment Mono</span><span class="tag t-art">Editorial · Froid</span></div>
+    <div class="preview-title" style="font-family:'Fragment Mono',monospace; font-size:1.7rem; line-height:1.3;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Fragment Mono',monospace; font-size:0.7rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Fragment Mono',monospace; font-size:0.62rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Cutive Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Cutive Mono</span><span class="tag t-niche">Typewriter · Vintage</span></div>
+    <div class="preview-title" style="font-family:'Cutive Mono',monospace; font-size:1.8rem; line-height:1.25;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Cutive Mono',monospace; font-size:0.72rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Cutive Mono',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'DM Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">DM Mono</span><span class="tag t-brand">Propre · Moderne</span></div>
+    <div class="preview-title" style="font-family:'DM Mono',monospace; font-size:1.75rem; font-weight:300; line-height:1.3;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'DM Mono',monospace; font-size:0.7rem; font-weight:300;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'DM Mono',monospace; font-size:0.62rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Chivo Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Chivo Mono</span><span class="tag t-art">Latin · Pointu</span></div>
+    <div class="preview-title" style="font-family:'Chivo Mono',monospace; font-size:1.75rem; font-weight:300; line-height:1.3;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Chivo Mono',monospace; font-size:0.7rem; font-weight:300;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Chivo Mono',monospace; font-size:0.62rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Courier Prime')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Courier Prime</span><span class="tag t-niche">Scénario · Raffiné</span></div>
+    <div class="preview-title" style="font-family:'Courier Prime',monospace; font-size:1.9rem; line-height:1.25;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Courier Prime',monospace; font-size:0.72rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Courier Prime',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Share Tech Mono')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Share Tech Mono</span><span class="tag t-wow">Terminal · Hacker</span></div>
+    <div class="preview-title" style="font-family:'Share Tech Mono',monospace; font-size:1.9rem; line-height:1.25;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub" style="font-family:'Share Tech Mono',monospace; font-size:0.72rem;">100 faire-parts NFC faits à la main.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:#555;">Sophie & Thomas_</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LISTE INITIALE -->
+<div class="section-title" style="margin-top:40px;">✦ Sélection initiale — serifs & classiques</div>
+<div class="grid">
+
+  <div class="card" onclick="sel(this,'Bodoni Moda')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Bodoni Moda</span><span class="tag t-wow">Editorial Vogue</span></div>
+    <div class="preview-title" style="font-family:'Bodoni Moda',serif; font-size:2.4rem; font-weight:400; font-optical-sizing:auto;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Bodoni Moda',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Cormorant Garamond')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Cormorant Garamond</span><span class="tag t-niche">Haute couture · Fin</span></div>
+    <div class="preview-title" style="font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:300; line-height:1.1;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Cormorant Garamond',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Italiana')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Italiana</span><span class="tag t-niche">Rare · Minimaliste</span></div>
+    <div class="preview-title" style="font-family:'Italiana',serif; font-size:2.5rem; font-weight:400;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Italiana',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Gilda Display')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Gilda Display</span><span class="tag t-niche">Élégant discret</span></div>
+    <div class="preview-title" style="font-family:'Gilda Display',serif; font-size:2.3rem; font-weight:400;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Gilda Display',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Cinzel')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Cinzel</span><span class="tag t-brand">Romain · Intemporel</span></div>
+    <div class="preview-title" style="font-family:'Cinzel',serif; font-size:1.7rem; font-weight:400; letter-spacing:0.06em; line-height:1.3;">
+      VOTRE MARIAGE,<br/>À UN TAP.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Cinzel',serif; letter-spacing:0.06em;">SOPHIE & THOMAS</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Raleway')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Raleway</span><span class="tag t-art">Art Déco · Aérien</span></div>
+    <div class="preview-title" style="font-family:'Raleway',sans-serif; font-size:2.4rem; font-weight:200; letter-spacing:0.04em; line-height:1.2;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Raleway',sans-serif; font-weight:300;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta" style="font-family:'Raleway',sans-serif; letter-spacing:0.06em;">RÉSERVER →</div>
+      <div class="preview-brand" style="font-family:'Raleway',sans-serif; letter-spacing:0.06em;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Oranienbaum')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Oranienbaum</span><span class="tag t-niche">Slave · Littéraire</span></div>
+    <div class="preview-title" style="font-family:'Oranienbaum',serif; font-size:2.4rem; font-weight:400;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Oranienbaum',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Josefin Sans')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Josefin Sans</span><span class="tag t-art">Géométrique · Rétro</span></div>
+    <div class="preview-title" style="font-family:'Josefin Sans',sans-serif; font-size:2rem; font-weight:300; letter-spacing:0.1em; line-height:1.3;">
+      VOTRE MARIAGE,<br/>À UN TAP.
+    </div>
+    <p class="preview-sub" style="font-family:'Josefin Sans',sans-serif; font-weight:300; letter-spacing:0.04em;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta" style="font-family:'Josefin Sans',sans-serif; letter-spacing:0.08em;">RÉSERVER →</div>
+      <div class="preview-brand" style="font-family:'Josefin Sans',sans-serif; letter-spacing:0.06em;">SOPHIE & THOMAS</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Spectral')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Spectral</span><span class="tag t-niche">Éditorial · Presse</span></div>
+    <div class="preview-title" style="font-family:'Spectral',serif; font-size:2.4rem; font-weight:300;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub" style="font-family:'Spectral',serif; font-weight:300;">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Spectral',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Marcellus')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Marcellus</span><span class="tag t-niche">Sobre · Intemporel</span></div>
+    <div class="preview-title" style="font-family:'Marcellus',serif; font-size:2.3rem; font-weight:400;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Marcellus',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'DM Serif Text')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">DM Serif Text</span><span class="tag t-art">Moderne · Propre</span></div>
+    <div class="preview-title" style="font-family:'DM Serif Text',serif; font-size:2.3rem; font-weight:400;">
+      Votre mariage,<br/><em style="font-style:italic;">à un tap.</em>
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'DM Serif Text',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="sel(this,'Rufina')">
+    <div class="check">✓</div>
+    <div class="card-meta"><span class="card-name">Rufina</span><span class="tag t-niche">Espagnole · Raffinée</span></div>
+    <div class="preview-title" style="font-family:'Rufina',serif; font-size:2.4rem; font-weight:400;">
+      Votre mariage,<br/>à un tap.
+    </div>
+    <p class="preview-sub">100 faire-parts NFC faits à la main. Votre site de mariage inclus.</p>
+    <div class="preview-bottom">
+      <div class="preview-cta">Réserver →</div>
+      <div class="preview-brand" style="font-family:'Rufina',serif;">Sophie & Thomas · 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STICKY BAR -->
+<div class="bar" id="bar">
+  <span>Police : <strong id="fname">—</strong></span>
+  <button onclick="applyFont()">Appliquer au site →</button>
+</div>
+
+<script>
+  let current = null;
+  let chosen = null;
+
+  function sel(el, name) {
+    if (current) current.classList.remove('selected');
+    el.classList.add('selected');
+    current = el;
+    chosen = name;
+    document.getElementById('fname').textContent = name;
+    document.getElementById('bar').classList.add('show');
+  }
+
+  function applyFont() {
+    if (!chosen) return;
+    const msg = `Police sélectionnée : "${chosen}"\n\nDis à Claude : applique ${chosen} — il met à jour index.html.`;
+    alert(msg);
+  }
+</script>
+</body>
+</html>

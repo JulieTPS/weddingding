@@ -276,111 +276,112 @@ function Count({ to, prefix = '', suffix = '' }: { to: number; prefix?: string; 
   return <span ref={ref}>{prefix}{v}{suffix}</span>
 }
 
-/* ══ NFC Sequence — pinned scroll narrative ═════════════════ */
+/* ══ NFC Scene — stacking panels ════════════════════════════ */
+const NFC_PANELS = [
+  {
+    img: '/card-photo.png',
+    n: '01',
+    h: 'Fabriquée pour durer autant que le souvenir',
+    b: 'Papier coton 350g, dorure à chaud, sticker époxy serti à la main. Votre faire-part est conçu comme un objet précieux — pas un carton qu\'on jette.',
+    pos: 'object-top',
+  },
+  {
+    img: '/tap-photo.png',
+    n: '02',
+    h: 'Vos invités ne s\'y attendent pas',
+    b: 'Ils approchent leur téléphone, par curiosité. Et ça s\'ouvre. Pas d\'app, pas de QR code à photographier — juste de l\'étonnement, puis du sourire.',
+    pos: 'object-center',
+  },
+  {
+    img: '/tap-open-photo.png',
+    n: '03',
+    h: 'Tout votre mariage, dans leur poche',
+    b: 'Programme, lieu, RSVP, photos du château — tout s\'ouvre en une seconde. Vous recevez leurs réponses en temps réel, sans courir après les confirmations.',
+    pos: 'object-center',
+  },
+]
+
 function NfcScene() {
   const wrap = useRef<HTMLDivElement>(null)
-  const { scrollYProgress: p } = useScroll({ target: wrap, offset: ['start start', 'end end'] })
+  const { scrollYProgress } = useScroll({ target: wrap, offset: ['start start', 'end end'] })
 
-  const h1op = useTransform(p, [0, 0.08, 0.20, 0.28], [0, 1, 1, 0])
-  const h1y  = useTransform(p, [0, 0.08], [24, 0])
+  const p1y  = useTransform(scrollYProgress, [0, 0.33], ['0%', '-8%'])
+  const p1sc = useTransform(scrollYProgress, [0, 0.33], [1, 0.92])
+  const p1op = useTransform(scrollYProgress, [0.22, 0.36], [1, 0])
 
-  const cS   = useTransform(p, [0.22, 0.42, 0.78, 0.90], [0.08, 1, 1, 0.85])
-  const cY   = useTransform(p, [0.22, 0.42], [36, 0])
-  const cOp  = useTransform(p, [0.22, 0.34, 0.78, 0.90], [0, 1, 1, 0])
+  const p2y  = useTransform(scrollYProgress, [0.2, 0.46], ['100%', '0%'])
+  const p2sc = useTransform(scrollYProgress, [0.46, 0.66], [1, 0.92])
+  const p2op = useTransform(scrollYProgress, [0.55, 0.68], [1, 0])
 
-  const rOp  = useTransform(p, [0.50, 0.56, 0.72, 0.80], [0, 1, 1, 0])
-  const gS   = useTransform(p, [0.50, 0.70], [0.1, 10])
-  const gOp  = useTransform(p, [0.50, 0.57, 0.68, 0.76], [0, 0.8, 0.8, 0])
+  const p3y  = useTransform(scrollYProgress, [0.54, 0.78], ['100%', '0%'])
 
-  const tOp  = useTransform(p, [0.68, 0.78, 0.90, 1.0], [0, 1, 1, 0])
-  const tY   = useTransform(p, [0.68, 0.78], [16, 0])
-
-  const bar  = useTransform(p, [0, 1], ['0%', '100%'])
+  const panels = [
+    { y: p1y, scale: p1sc, opacity: p1op, z: 1 },
+    { y: p2y, scale: p2sc, opacity: p2op, z: 2 },
+    { y: p3y, scale: useMotionValue(1), opacity: useMotionValue(1), z: 3 },
+  ]
 
   return (
-    <section ref={wrap} style={{ height: '480vh' }}>
-      <div className="sticky top-0 h-screen flex items-center justify-center bg-[#1a1a1a] overflow-hidden">
-        {/* grain */}
-        <div className="absolute inset-0 opacity-[0.035] pointer-events-none z-0"
-          style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
+    <div ref={wrap} style={{ height: '320vh' }}>
+      <div className="sticky top-0 h-screen overflow-hidden" style={{ background: '#0c0b09' }}>
 
-        {/* background glow at tap */}
-        <motion.div style={{ scale: gS, opacity: gOp }}
-          className="absolute pointer-events-none z-0">
-          <div className="w-56 h-56 rounded-full"
-            style={{ background: 'radial-gradient(circle, rgba(232,130,106,0.4) 0%, transparent 70%)' }} />
-        </motion.div>
+        {NFC_PANELS.map((panel, i) => (
+          <motion.div key={i}
+            className="absolute inset-0"
+            style={{ y: panels[i].y, scale: panels[i].scale, opacity: panels[i].opacity, zIndex: panels[i].z, transformOrigin: 'top center' }}>
 
-        {/* intro text */}
-        <motion.div style={{ opacity: h1op, y: h1y }}
-          className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 pointer-events-none px-6">
-          <p className="font-sans text-[0.62rem] tracking-[0.26em] uppercase text-white/30 mb-5">La technologie NFC</p>
-          <h2 className="font-serif text-white leading-[1.05] tracking-[-0.025em]"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}>
-            Un tap.<br />
-            <em className="not-italic" style={{ color: '#e8826a' }}>C'est tout.</em>
-          </h2>
-        </motion.div>
+            {/* fond sombre plein écran */}
+            <div className="absolute inset-0" style={{ background: '#0c0b09' }} />
 
-        {/* wedding card — large, centered */}
-        <motion.div style={{ scale: cS, y: cY, opacity: cOp }}
-          className="absolute z-20 pointer-events-none">
-          <div className="bg-white rounded-2xl overflow-hidden"
-            style={{ width: 'clamp(260px, 38vw, 460px)', boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)' }}>
-            <div className="h-1" style={{ background: 'linear-gradient(90deg, #e8826a 0%, #f5b0a0 50%, #e8826a 100%)' }} />
-            <div className="px-9 py-9">
-              <p className="font-sans text-[0.42rem] tracking-[0.3em] uppercase mb-5" style={{ color: '#bbb' }}>
-                Invitation au mariage
-              </p>
-              <p className="font-serif text-[#2c2c2c] leading-tight mb-2"
-                style={{ fontSize: 'clamp(1.7rem, 3.5vw, 2.8rem)' }}>
-                Léa & Maxime
-              </p>
-              <p className="font-sans font-light mb-0.5" style={{ color: '#9a9a9a', fontSize: 'clamp(0.75rem, 1.2vw, 1rem)' }}>
-                20 septembre 2026
-              </p>
-              <p className="font-sans font-light mb-7" style={{ color: '#c0c0c0', fontSize: 'clamp(0.65rem, 1vw, 0.85rem)' }}>
-                Château de Vaux-le-Vicomte
-              </p>
-              <div className="h-px mb-6" style={{ background: '#f0f0f0' }} />
-              <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: '#fdf0ec' }}>
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: '#e8826a', animation: 'dot-pulse 2s ease-in-out infinite' }} />
-                <p className="font-sans font-medium text-[0.62rem]" style={{ color: '#e8826a' }}>
-                  Approchez votre téléphone pour ouvrir
+            {/* grain */}
+            <div className="absolute inset-0 opacity-[0.032] pointer-events-none"
+              style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
+
+            {/* layout éditorial : texte gauche + image droite */}
+            <div className="absolute inset-0 flex items-center justify-between px-8 md:px-16 gap-8 md:gap-16">
+
+              {/* texte gauche */}
+              <div className="flex flex-col gap-4 max-w-sm shrink-0 z-10">
+                <span className="font-sans text-[0.58rem] tracking-[0.26em] uppercase"
+                  style={{ color: '#e8826a' }}>{panel.n} — Comment ça marche</span>
+                <h2 className="font-serif leading-[1.05]"
+                  style={{ fontSize: 'clamp(1.8rem, 3.5vw, 3rem)', color: '#ede8de' }}>
+                  {panel.h}
+                </h2>
+                <p className="font-sans font-light leading-relaxed text-[0.9rem]"
+                  style={{ color: 'rgba(237,232,222,0.5)' }}>
+                  {panel.b}
                 </p>
               </div>
+
+              {/* image à proportion naturelle, droite */}
+              <div className="flex-1 flex items-center justify-center md:justify-end h-full py-10 z-10">
+                <img src={panel.img} alt={panel.h}
+                  className="rounded-2xl"
+                  style={{
+                    maxHeight: '82vh',
+                    maxWidth: '100%',
+                    width: 'auto',
+                    objectFit: 'contain',
+                    boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
+                  }} />
+              </div>
+
             </div>
-          </div>
-        </motion.div>
 
-        {/* NFC rings */}
-        <motion.div style={{ opacity: rOp }} className="absolute pointer-events-none z-10">
-          {[80, 150, 240, 340].map((s, i) => (
-            <div key={i} className="absolute rounded-full"
-              style={{ width: s, height: s,
-                top: `calc(50% - ${s/2}px)`, left: `calc(50% - ${s/2}px)`,
-                border: '1.5px solid rgba(232,130,106,0.25)',
-                animation: `nfc-ring 2.4s ease-out infinite ${i * 0.5}s` }} />
-          ))}
-        </motion.div>
+            {/* indicateur de progression */}
+            <div className="absolute right-8 md:right-12 top-1/2 -translate-y-1/2 flex flex-col gap-2" style={{ zIndex: 10 }}>
+              {NFC_PANELS.map((_, j) => (
+                <div key={j} className="w-px rounded-full transition-all duration-300"
+                  style={{ height: j === i ? 32 : 12, background: j === i ? '#e8826a' : 'rgba(255,255,255,0.2)' }} />
+              ))}
+            </div>
 
-        {/* tagline */}
-        <motion.div style={{ opacity: tOp, y: tY }}
-          className="absolute bottom-12 text-center pointer-events-none z-30 px-8">
-          <p className="font-sans text-[0.58rem] tracking-[0.22em] uppercase mb-2.5" style={{ color: 'rgba(232,130,106,0.5)' }}>
-            Ressenti par 97% des invités
-          </p>
-          <p className="font-serif italic text-2xl" style={{ color: 'rgba(255,255,255,0.55)' }}>
-            "Comment vous avez fait ça ?"
-          </p>
-        </motion.div>
+          </motion.div>
+        ))}
 
-        {/* scroll bar */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-px h-8 bg-white/8 overflow-hidden rounded-full z-50">
-          <motion.div className="absolute top-0 left-0 w-full rounded-full" style={{ height: bar, background: '#e8826a', opacity: 0.5 }} />
-        </div>
       </div>
-    </section>
+    </div>
   )
 }
 

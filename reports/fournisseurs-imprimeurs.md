@@ -11,16 +11,16 @@ Besoin : impression de cartes faire-part mariage personnalisées (custom par cou
 
 ## 1. Imprimeurs France — Tier 1 (upload PDF, petits volumes)
 
-| Imprimeur | Prix ~100 cartes | Papier 350g | Finitions premium | Délai | Notes |
+| Imprimeur | Prix ~100 cartes | Papier 350g | Finitions premium | Délai | Statut |
 |---|---|---|---|---|---|
-| **Realisaprint** | ~€35-55 HT | Oui | Dorure à chaud, vernis sélectif 3D, pelliculage | 3-5j | Conçu pour revendeurs, prix pro |
-| **ObiPrint** | ~€30-50 HT | Oui | Dorure à chaud, vernis sélectif, soft-touch | 3-5j | Concurrent direct Realisaprint |
-| **Pixartprinting** | ~€45-70 HT | Oui | Pelliculage mat/brillant, soft-touch | 3-7j | Qualité 5/5, référence EU |
-| **Exaprint** | ~€55-90 HT | Oui | Large gamme, production 100% France | 2-4j | Le plus fiable en France, partenariats revendeurs |
-| **Mon Imprimeur Français** | ~€40-65 HT | Oui (350g mat) | Standard + pelliculage | 4-6j | 100% France |
+| **Realisaprint** | ~€35-55 HT | Oui | Dorure à chaud, vernis sélectif 3D, pelliculage | 3-5j | ✅ Confirmé (page faire-part dédiée) |
+| **ObiPrint** | ~€30-50 HT | Oui | Dorure à chaud, vernis sélectif, découpe à la forme | 3-5j | ✅ Confirmé (page faire-part dédiée) |
+| **Exaprint** | ~€55-90 HT | Oui | Large gamme, production 100% France | 2-4j | ✅ Confirmé (page thème mariage) |
+| **Mon Imprimeur Français** | ~€40-65 HT | Oui (350g mat) | Standard + pelliculage | 4-6j | ✅ Confirmé (cartes invitation) |
+| **Pixartprinting** | ~€45-70 HT | Oui | Pelliculage mat/brillant, soft-touch | 3-7j | ⚠️ À vérifier — cartes invitation oui, faire-part mariage non confirmé |
 
 **Recommandation court terme : Realisaprint ou ObiPrint**
-→ Conçus pour revendeurs (upload PDF clean), dorure à chaud dès 100 exemplaires, prix pro sans compte entreprise.
+→ Confirmés pour faire-parts mariage (pages produit dédiées), conçus pour revendeurs (upload PDF), dorure à chaud dès 100 exemplaires.
 
 ### Liens
 - [Realisaprint — faire-part vernis sélectif](https://www.realisaprint.com/faire-part-vernis-r1998.html)
@@ -55,19 +55,17 @@ Ces imprimeurs ont leurs propres catalogues de modèles. Pas compatibles avec le
 
 ## 3. Europe de l'Est / Allemagne — Prix -30 à -40% vs France
 
-| Fournisseur | Pays | Prix ~100 cartes | Délai FR | Finitions | Upload PDF |
+| Fournisseur | Pays | Prix ~100 cartes | Délai FR | Finitions | Faire-parts mariage ? |
 |---|---|---|---|---|---|
-| **Flyeralarm** | Allemagne | ~€25-40 HT | 3-5j | Pelliculage mat/brillant | Oui |
-| **Saxoprint** | Allemagne | ~€20-35 HT | 4-6j | Pelliculage + vernis | Oui |
-| **Onlineprinters** | Allemagne | ~€22-38 HT | 4-6j | Standard | Oui |
-| **Sprint24** | Pologne | ~€18-30 HT | 4-7j | Pelliculage, vernis | Oui |
+| **Flyeralarm** | Allemagne | ~€25-40 HT | 3-5j | Pelliculage mat/brillant | ⚠️ Cartes invitation oui, faire-part mariage non confirmé — à vérifier |
+| **Saxoprint** | Allemagne | ~€20-35 HT | 4-6j | Pelliculage + vernis | ❌ Aucun résultat trouvé pour faire-parts mariage |
+| **Onlineprinters** | Allemagne | ~€22-38 HT | 4-6j | Standard | ⚠️ Imprimeur généraliste — à vérifier sur leur site |
+| **Sprint24** | Pologne | ~€18-30 HT | 4-7j | Pelliculage, vernis | ⚠️ "Wedding prints" sur version UK — version FR floue |
 
-**Avantages** : 30-40% moins cher que les imprimeurs français, qualité pro, interfaces en français.
-**Inconvénients** : pas de dorure à chaud disponible chez la plupart, délai +1-2j vs France.
+**Avantages** : prix 30-40% moins chers que la France si le produit correspond.
+**Inconvénients** : aucun de ces imprimeurs n'a de page faire-part mariage clairement confirmée. Pas de dorure à chaud chez la plupart. À utiliser uniquement après vérification directe sur leur site.
 
-**Meilleur pick : Flyeralarm** — groupe sérieux, interface FR, finitions propres, tarifs dégressifs dès 50 ex.
-
-**Note Sprint24** : basé à Varsovie, qualité notée 3/5 dans les comparatifs (vs 4-5/5 pour les autres), support lent. Moins recommandé.
+**Conclusion** : pour les commandes clients, rester sur Realisaprint/ObiPrint/Exaprint (confirmés). Ces imprimeurs EU sont à garder en réserve pour des volumes importants d'impression standard (sans finitions luxe).
 
 ### Liens
 - [Flyeralarm France](https://www.flyeralarm.com/fr/)
