@@ -337,12 +337,22 @@ function NfcScene() {
             <div className="absolute inset-0 opacity-[0.032] pointer-events-none"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: '180px' }} />
 
-            {/* ── MOBILE : image full-bleed + texte overlay bas ── */}
-            <div className="md:hidden absolute inset-0">
+            {/* ── MOBILE : blurred bg + image contenue + texte overlay bas ── */}
+            <div className="md:hidden absolute inset-0 overflow-hidden">
+              {/* fond flouté — copie de l'image zoomée et blurée */}
+              <img src={panel.img} alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ filter: 'blur(22px)', transform: 'scale(1.15)', opacity: 0.45 }} />
+              {/* assombrir le fond */}
+              <div className="absolute inset-0" style={{ background: 'rgba(12,11,9,0.55)' }} />
+              {/* image à proportion naturelle, centrée */}
               <img src={panel.img} alt={panel.h}
-                className="absolute inset-0 w-full h-full object-cover object-center" />
+                className="absolute left-1/2 -translate-x-1/2"
+                style={{ top: '6%', maxHeight: '58vh', width: 'auto', maxWidth: '88%', objectFit: 'contain', borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'block' }} />
+              {/* gradient bas pour lisibilité du texte */}
               <div className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(12,11,9,0.96) 0%, rgba(12,11,9,0.4) 50%, rgba(12,11,9,0.15) 100%)' }} />
+                style={{ background: 'linear-gradient(to top, rgba(12,11,9,0.98) 0%, rgba(12,11,9,0.7) 32%, transparent 58%)' }} />
               <div className="absolute bottom-0 left-0 right-0 px-6 pb-10 flex flex-col gap-3">
                 <span className="font-sans text-[0.58rem] tracking-[0.26em] uppercase"
                   style={{ color: '#e8826a' }}>{panel.n} — Comment ça marche</span>
