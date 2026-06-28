@@ -408,8 +408,6 @@ function NfcScene() {
 
             </div>
 
-            </div>
-
             {/* indicateur de progression */}
             <div className="absolute right-8 md:right-12 top-1/2 -translate-y-1/2 flex flex-col gap-2" style={{ zIndex: 10 }}>
               {NFC_PANELS.map((_, j) => (
