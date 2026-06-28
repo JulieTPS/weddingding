@@ -210,12 +210,13 @@ const fu = (d = 0) => ({
   transition: { duration: 0.6, delay: d, ease: EASE },
 })
 
-/* ══ Word reveal ════════════════════════════════════════════ */
+/* ══ Word reveal (scroll-triggered) ════════════════════════ */
 function Reveal({ text, className = '', delay = 0 }: { text: string; className?: string; delay?: number }) {
   return (
     <span className={className} aria-label={text}>
       {text.split(' ').map((w, i) => (
-        <span key={i} className="inline-block overflow-hidden" style={{ marginRight: '0.25em' }}>
+        <span key={i} className="inline-block overflow-hidden"
+          style={{ marginRight: '0.25em', paddingBottom: '0.14em', marginBottom: '-0.14em' }}>
           <motion.span className="inline-block"
             initial={{ y: '105%' }}
             whileInView={{ y: '0%' }}
@@ -226,6 +227,28 @@ function Reveal({ text, className = '', delay = 0 }: { text: string; className?:
         </span>
       ))}
     </span>
+  )
+}
+
+/* ══ Hero word reveal (on-mount, tighter stagger) ═══════════ */
+type HeroSeg = { text: string; style?: React.CSSProperties }
+function HeroReveal({ segments, baseDelay = 0 }: { segments: HeroSeg[]; baseDelay?: number }) {
+  const words = segments.flatMap(seg =>
+    seg.text.split(' ').map(w => ({ w, style: seg.style }))
+  )
+  return (
+    <>
+      {words.map((item, i) => (
+        <span key={i} className="inline-block overflow-hidden align-bottom"
+          style={{ marginRight: '0.16em', paddingRight: '0.1em', paddingBottom: '0.14em', marginBottom: '-0.14em' }}>
+          <motion.span className="inline-block" style={item.style}
+            initial={{ y: '108%' }} animate={{ y: '0%' }}
+            transition={{ duration: 0.72, delay: baseDelay + i * 0.055, ease: EASE }}>
+            {item.w}
+          </motion.span>
+        </span>
+      ))}
+    </>
   )
 }
 
@@ -457,15 +480,37 @@ export default function App() {
               Nouveauté France · Lancement 2026
             </motion.span>
 
-            <div className="overflow-hidden mb-2">
-              <motion.h1 className="font-serif text-white leading-[1.1] tracking-[-0.02em]"
-                style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}
-                initial={{ y: '100%' }} animate={{ y: 0 }}
-                transition={{ delay: 0.32, duration: 0.75, ease: EASE }}>
-                Le faire-part qui s'ouvre{' '}
-                <em className="italic" style={{ color: '#ffd4c8' }}>d'un tap</em>
-              </motion.h1>
-            </div>
+            <h1 className="font-serif text-white leading-[1.08] tracking-[-0.02em] mb-2"
+              style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)' }}>
+              <HeroReveal baseDelay={0.28} segments={[
+                { text: "Le faire-part qui s'ouvre" },
+              ]} />
+              {/* "d'un tap" — taille +8%, couleur, underline SVG animé */}
+              <span className="relative inline-block ml-[0.26em]"
+                style={{ color: '#ffd4c8', fontStyle: 'italic', fontSize: '1.08em' }}>
+                {["d'un", 'tap'].map((w, i) => (
+                  <span key={i} className="inline-block overflow-hidden align-bottom"
+                    style={{ marginRight: i === 0 ? '0.16em' : 0, paddingRight: '0.1em', paddingBottom: '0.14em', marginBottom: '-0.14em' }}>
+                    <motion.span className="inline-block"
+                      initial={{ y: '108%' }} animate={{ y: '0%' }}
+                      transition={{ duration: 0.72, delay: 0.28 + (4 + i) * 0.055, ease: EASE }}>
+                      {w}
+                    </motion.span>
+                  </span>
+                ))}
+                {/* Underline qui se dessine après le dernier mot */}
+                <svg viewBox="0 0 100 10" preserveAspectRatio="none"
+                  style={{ position: 'absolute', bottom: '-5px', left: 0, width: '100%', height: 10, overflow: 'visible' }}>
+                  <motion.path
+                    d="M 1 6 C 18 2 38 9 58 5 C 76 1 90 8 99 5"
+                    fill="none" stroke="#ffd4c8" strokeWidth="2.2" strokeLinecap="round"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 0.85 }}
+                    transition={{ delay: 0.28 + 5 * 0.055 + 0.22, duration: 0.52, ease: EASE }}
+                  />
+                </svg>
+              </span>
+            </h1>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               transition={{ delay: 0.65, duration: 0.7 }}
