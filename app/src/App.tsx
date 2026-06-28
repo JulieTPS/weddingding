@@ -309,11 +309,11 @@ function NfcScene() {
   const p1sc = useTransform(scrollYProgress, [0, 0.42], [1, 0.86])
   const p1op = useTransform(scrollYProgress, [0.28, 0.42], [1, 0])
 
-  const p2y  = useTransform(scrollYProgress, [0.2, 0.44], ['100%', '0%'])
-  const p2sc = useTransform(scrollYProgress, [0.58, 0.84], [1, 0.86])
-  const p2op = useTransform(scrollYProgress, [0.72, 0.84], [1, 0])
+  const p2y  = useTransform(scrollYProgress, [0.2, 0.44, 0.82], ['100%', '0%', '-10%'])
+  const p2sc = useTransform(scrollYProgress, [0.58, 0.82], [1, 0.86])
+  const p2op = useTransform(scrollYProgress, [0.70, 0.82], [1, 0])
 
-  const p3y  = useTransform(scrollYProgress, [0.70, 0.90], ['100%', '0%'])
+  const p3y  = useTransform(scrollYProgress, [0.64, 0.82], ['100%', '0%'])
 
   const panels = [
     { y: p1y, scale: p1sc, opacity: p1op, z: 1 },
