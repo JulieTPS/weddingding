@@ -590,7 +590,7 @@ export default function App() {
                   <div className="flex flex-col gap-1 min-w-0">
                     <p className="font-serif text-white leading-tight"
                       style={{ fontSize: '1.05rem', letterSpacing: '-0.01em' }}>
-                      Parfait — <em style={{ color: '#ffd4c8', fontStyle: 'italic' }}>consultez vos mails</em>
+                      Parfait — <span className="font-sans" style={{ color: '#ffd4c8', fontWeight: 400 }}>consultez vos mails</span>
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-sans font-light"
