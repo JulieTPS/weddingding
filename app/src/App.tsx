@@ -441,9 +441,16 @@ export default function App() {
         className="fixed top-0 inset-x-0 z-50 flex items-center justify-between h-[72px] px-8 md:px-12 transition-all duration-400"
         style={scrolled ? { background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(16px)', boxShadow: '0 1px 0 rgba(0,0,0,0.06)' } : {}}>
 
-        <a href="#" data-mag className="font-pacifico text-[1.25rem] select-none"
-          style={{ color: scrolled ? '#2c2c2c' : 'white' }}>
-          Wedding<span style={{ color: scrolled ? '#e8826a' : 'rgba(255,200,180,1)' }}>Ding</span>
+        <a href="#" data-mag className="select-none flex items-center gap-2">
+          <img
+            src={scrolled ? '/logo-light.svg' : '/logo.svg'}
+            alt="WeddingDing"
+            style={{ height: 30, width: 'auto', transition: 'opacity 0.3s' }}
+          />
+          <span className="font-pacifico text-[1.05rem]"
+            style={{ color: scrolled ? '#2c2c2c' : 'white' }}>
+            Wedding<span style={{ color: scrolled ? '#e8826a' : 'rgba(255,200,180,1)' }}>Ding</span>
+          </span>
         </a>
 
         <nav className="hidden md:flex items-center gap-8">
