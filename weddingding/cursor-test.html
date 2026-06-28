@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cursor Test — WeddingDing</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Sans:wght@300;400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#f8f7f6;color:#2c2c2c;-webkit-font-smoothing:antialiased;cursor:none}
+a,button,[data-interactive]{cursor:none}
+
+/* ─── SWITCHER ─────────────────────────── */
+.switcher{
+  position:fixed;top:20px;left:50%;transform:translateX(-50%);
+  z-index:99999;display:flex;gap:8px;
+  background:rgba(255,255,255,0.95);border:1px solid #ece8e4;
+  border-radius:100px;padding:6px;
+  backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,0.1);
+}
+.switcher button{
+  padding:8px 20px;border-radius:100px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;
+  cursor:none;transition:all .2s;color:#7a7a7a;background:transparent;
+}
+.switcher button.active{background:#e8826a;color:white}
+.switcher button.wedding-active{background:linear-gradient(135deg,#c8a86e,#e8826a);color:white}
+.switcher button:not(.active):not(.wedding-active):hover{color:#2c2c2c}
+
+/* ─── CANVAS OVERLAY ───────────────────── */
+#sparkle-canvas{
+  position:fixed;inset:0;pointer-events:none;z-index:99990;
+}
+
+/* ─── CURSOR ELEMENTS ──────────────────── */
+/* Shared dot */
+.cur-dot{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99998;
+  border-radius:50%;transform:translate(-50%,-50%);
+}
+
+/* C1: Dot + Ring */
+#c1-dot{width:5px;height:5px;background:#e8826a;display:none}
+#c1-ring{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99997;
+  width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);
+  border:1.5px solid rgba(232,130,106,0.65);display:none;
+  transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1),border-color .2s;
+}
+#c1-label{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99999;
+  background:#e8826a;color:white;font-family:'DM Sans',sans-serif;font-weight:500;
+  font-size:0.62rem;letter-spacing:.06em;white-space:nowrap;
+  padding:5px 11px;border-radius:100px;transform:translate(-50%,-50%);
+  opacity:0;transition:opacity .18s;display:none;
+}
+
+/* C2: Glow Blob */
+#c2-blob{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99997;
+  width:18px;height:18px;border-radius:50%;display:none;
+  background:rgba(232,130,106,0.35);filter:blur(7px);
+  transform:translate(-50%,-50%);
+  transition:width .4s cubic-bezier(.22,1,.36,1),height .4s cubic-bezier(.22,1,.36,1);
+}
+#c2-dot{width:5px;height:5px;background:#e8826a;display:none}
+
+/* C3: Pill texte */
+#c3-dot{width:5px;height:5px;background:white;mix-blend-mode:difference;display:none}
+#c3-pill{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99999;
+  background:#e8826a;color:white;font-family:'DM Sans',sans-serif;font-weight:500;
+  font-size:0.65rem;letter-spacing:.06em;white-space:nowrap;
+  padding:6px 14px;border-radius:100px;
+  transform:translate(-50%,-50%) scale(0);opacity:0;
+  transition:transform .25s cubic-bezier(.22,1,.36,1),opacity .18s;display:none;
+}
+
+/* C4: WEDDING — dot + ring lumineux */
+#c4-core{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99998;
+  width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);display:none;
+  background:white;
+  box-shadow:0 0 6px 2px rgba(228,204,146,0.9), 0 0 14px 4px rgba(200,168,110,0.5);
+}
+#c4-ring{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99997;
+  width:24px;height:24px;border-radius:50%;transform:translate(-50%,-50%);display:none;
+  border:1px solid rgba(228,204,146,0.7);
+  box-shadow:0 0 8px 2px rgba(228,204,146,0.25),inset 0 0 6px rgba(228,204,146,0.1);
+  transition:width .28s cubic-bezier(.22,1,.36,1),height .28s cubic-bezier(.22,1,.36,1);
+}
+
+/* hover states */
+body.c1-cta #c1-ring{width:62px;height:62px;border-color:transparent}
+body.c1-cta #c1-label{opacity:1}
+body.c1-link #c1-ring{width:40px;height:40px}
+
+body.c2-cta #c2-blob{width:60px;height:60px;filter:blur(14px)}
+body.c2-link #c2-blob{width:36px;height:36px;filter:blur(9px)}
+
+body.c3-cta #c3-pill{transform:translate(-50%,-50%) scale(1);opacity:1}
+body.c3-cta #c3-dot{opacity:0}
+
+body.c4-cta #c4-ring{width:56px;height:56px}
+body.c4-link #c4-ring{width:36px;height:36px}
+
+/* ─── PAGE CONTENT ─────────────────────── */
+.hero{
+  min-height:100vh;position:relative;overflow:hidden;
+  background:linear-gradient(130deg,#0c0b09 0%,#1e1a14 100%);
+  display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:center;padding:120px 80px;gap:24px;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 60% at 25% 50%,rgba(200,168,110,0.12) 0%,transparent 70%);
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,168,110,0.1);border:1px solid rgba(200,168,110,0.25);
+  color:rgba(200,168,110,0.8);font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;
+  padding:7px 18px;border-radius:100px;
+}
+.hero-tag span{width:6px;height:6px;background:#c8a86e;border-radius:50%;animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:.4}}
+
+.hero h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(2.8rem,6.5vw,5.5rem);
+  color:white;line-height:1.04;letter-spacing:-0.035em;max-width:600px;
+}
+.hero h1 em{font-style:italic;color:#e4cc92}
+.hero p{color:rgba(255,255,255,0.45);font-weight:300;font-size:1rem;line-height:1.75;max-width:380px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-coral{
+  background:#e8826a;color:white;border:none;
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.9rem;
+  padding:14px 28px;border-radius:100px;transition:opacity .2s;
+  data-interactive:true;
+}
+.btn-outline{
+  background:transparent;color:white;
+  border:1.5px solid rgba(255,255,255,0.35);
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.9rem;
+  padding:14px 28px;border-radius:100px;transition:all .2s;
+}
+
+.content{padding:72px 80px;display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1100px;margin:0 auto;width:100%}
+.block h2{font-family:'DM Serif Display',serif;font-size:2rem;margin-bottom:10px;letter-spacing:-0.02em}
+.block p{font-weight:300;color:#7a7a7a;line-height:1.8;font-size:0.95rem;margin-bottom:16px}
+.lbl{font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:#e8826a;font-weight:500;margin-bottom:10px}
+.link{color:#e8826a;font-size:0.9rem;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.card{background:white;border:1px solid #ece8e4;border-radius:20px;padding:28px;box-shadow:0 2px 16px rgba(0,0,0,0.05)}
+.card h3{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:6px}
+.card p{font-weight:300;color:#7a7a7a;font-size:0.875rem;line-height:1.7;margin:0}
+.nfc{display:flex;align-items:center;gap:8px;background:#fdf0ec;border-radius:10px;padding:10px 14px;margin-top:14px}
+.nfc-dot{width:7px;height:7px;background:#e8826a;border-radius:50%;animation:glow 2s infinite;flex-shrink:0}
+.nfc p{font-size:0.75rem;font-weight:500;color:#e8826a;margin:0}
+
+footer{
+  padding:22px 80px;border-top:1px solid #ece8e4;
+  display:flex;justify-content:space-between;align-items:center;background:white;
+}
+.logo{font-family:'Pacifico',cursive;font-size:1.1rem;color:#2c2c2c}
+.logo span{color:#e8826a}
+footer p{font-size:0.78rem;color:#bbb}
+
+/* hint box */
+.hint{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,0.9);border:1px solid #ece8e4;
+  border-radius:100px;padding:8px 20px;font-size:0.72rem;color:#7a7a7a;
+  backdrop-filter:blur(12px);white-space:nowrap;z-index:99980;
+}
+.hint strong{color:#2c2c2c}
+</style>
+</head>
+<body>
+
+<canvas id="sparkle-canvas"></canvas>
+
+<!-- Switcher -->
+<div class="switcher">
+  <button onclick="setCursor(1,this)">① Dot + Ring</button>
+  <button onclick="setCursor(2,this)">② Glow Blob</button>
+  <button onclick="setCursor(3,this)">③ Texte Pill</button>
+  <button onclick="setCursor(4,this)">✦ Wedding</button>
+</div>
+
+<!-- Cursor 1 -->
+<div id="c1-dot" class="cur-dot"></div>
+<div id="c1-ring"></div>
+<div id="c1-label"></div>
+
+<!-- Cursor 2 -->
+<div id="c2-blob"></div>
+<div id="c2-dot" class="cur-dot"></div>
+
+<!-- Cursor 3 -->
+<div id="c3-dot" class="cur-dot"></div>
+<div id="c3-pill"></div>
+
+<!-- Cursor 4 wedding -->
+<div id="c4-core"></div>
+<div id="c4-ring"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag"><span></span>Lancement France · 2026</div>
+  <h1>Le faire-part qui s'ouvre <em>d'un tap</em></h1>
+  <p>100 faire-parts NFC premium + site de mariage inclus. Vos invités approchent leur téléphone — votre site s'ouvre instantanément.</p>
+  <div class="hero-btns">
+    <button class="btn-coral" data-label="Réserver →">Réserver ma place</button>
+    <button class="btn-outline" data-label="Voir →">Voir les tarifs</button>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<div class="content">
+  <div class="block">
+    <p class="lbl">La carte</p>
+    <h2>Un faire-part qui fait plus</h2>
+    <p>Papier 350g finition mat. Sticker 3D résine époxy. La puce NFC est glissée sous le sticker — invisible, indécelable.</p>
+    <a href="#" class="link" data-label="Voir →">Voir les détails →</a>
+  </div>
+  <div class="card">
+    <h3>Léa & Maxime</h3>
+    <p>20 septembre 2026 · Château de Vaux-le-Vicomte</p>
+    <div class="nfc">
+      <div class="nfc-dot"></div>
+      <p>NFC · Approchez votre téléphone</p>
+    </div>
+  </div>
+  <div class="block">
+    <p class="lbl">Le site de mariage</p>
+    <h2>Votre site inclus, prêt en 10 min</h2>
+    <p>RSVP intelligent, programme, plan d'accès, galerie. Hébergé 24 mois. Modifiable à tout moment.</p>
+    <a href="#" class="link" data-label="Explorer →">Explorer les fonctions →</a>
+  </div>
+  <div class="card">
+    <p class="lbl" style="margin-bottom:6px">RSVP confirmés</p>
+    <h2 style="font-size:3rem;letter-spacing:-0.04em">84</h2>
+    <p style="margin-bottom:14px">sur 120 invités · 70%</p>
+    <div style="height:5px;background:#f0ece8;border-radius:100px;overflow:hidden">
+      <div style="height:100%;width:70%;background:#e8826a;border-radius:100px"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span class="logo">Wedding<span>Ding</span></span>
+  <p>Survolez les <strong>boutons</strong> et les <strong>liens</strong> pour voir les états hover</p>
+  <p>cursor-test.html</p>
+</footer>
+
+<div class="hint">Sélectionnez un curseur en haut · <strong>✦ Wedding</strong> = poussière d'étoiles</div>
+
+<script>
+/* ════════════════════════════════════════
+   SPARKLE PARTICLE ENGINE (canvas)
+════════════════════════════════════════ */
+const canvas = document.getElementById('sparkle-canvas')
+const ctx    = canvas.getContext('2d')
+let W, H
+
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight }
+window.addEventListener('resize', resize); resize()
+
+// 4-pointed ✦ star path
+function star4(ctx, x, y, outer, inner){
+  ctx.beginPath()
+  for(let i=0;i<8;i++){
+    const angle = (i*Math.PI/4) - Math.PI/2
+    const r = (i%2===0) ? outer : inner
+    const px = Math.cos(angle)*r, py = Math.sin(angle)*r
+    i===0 ? ctx.moveTo(x+px, y+py) : ctx.lineTo(x+px, y+py)
+  }
+  ctx.closePath()
+}
+
+// Lightning bolt mini (3-segment zigzag)
+function lightning(ctx, x, y, len, angle){
+  const segs = 3
+  ctx.beginPath()
+  ctx.moveTo(x, y)
+  let cx=x, cy=y
+  for(let i=0;i<segs;i++){
+    const segLen = len/segs
+    const jitter = (Math.random()-0.5)*8
+    cx += Math.cos(angle)*segLen + jitter
+    cy += Math.sin(angle)*segLen + jitter
+    ctx.lineTo(cx, cy)
+  }
+  ctx.stroke()
+}
+
+const COLORS = ['#e4cc92','#f0dc9a','#ffffff','#ffd4c8','#c8a86e','#f5c8b8']
+
+class Particle {
+  constructor(x, y, type='star'){
+    this.x=x; this.y=y; this.type=type
+    this.vx=(Math.random()-.5)*2.8
+    this.vy=-(Math.random()*2.6+0.5)
+    this.gravity=0.055
+    this.opacity=0.9+Math.random()*0.1
+    this.decay=0.016+Math.random()*0.014
+    this.rot=Math.random()*Math.PI*2
+    this.rotV=(Math.random()-.5)*0.12
+    this.color=COLORS[Math.floor(Math.random()*COLORS.length)]
+    if(type==='star'){ this.size=Math.random()*6+3 }
+    else if(type==='dot'){ this.size=Math.random()*3+1.5 }
+    else { /* lightning */ this.size=Math.random()*14+8; this.angle=Math.random()*Math.PI*2 }
+  }
+  update(){
+    this.x+=this.vx; this.vy+=this.gravity; this.y+=this.vy
+    this.opacity-=this.decay; this.rot+=this.rotV; this.size*=0.975
+  }
+  dead(){ return this.opacity<=0 }
+  draw(ctx){
+    if(this.dead()) return
+    ctx.save()
+    ctx.globalAlpha=Math.max(0, this.opacity)
+    ctx.translate(this.x, this.y)
+    ctx.rotate(this.rot)
+    if(this.type==='star'){
+      const g=ctx.createRadialGradient(0,0,0,0,0,this.size)
+      g.addColorStop(0,'white'); g.addColorStop(0.4,this.color); g.addColorStop(1,'transparent')
+      ctx.fillStyle=g
+      star4(ctx,0,0,this.size,this.size*.32)
+      ctx.fill()
+    } else if(this.type==='dot'){
+      ctx.fillStyle=this.color
+      ctx.shadowColor=this.color; ctx.shadowBlur=6
+      ctx.beginPath(); ctx.arc(0,0,this.size,0,Math.PI*2); ctx.fill()
+    } else {
+      ctx.strokeStyle=this.color; ctx.lineWidth=1.2
+      ctx.shadowColor=this.color; ctx.shadowBlur=8
+      ctx.globalAlpha*=0.7
+      lightning(ctx,0,0,this.size,this.angle)
+    }
+    ctx.restore()
+  }
+}
+
+let particles=[]
+let frameCount=0
+
+function spawnSparkles(x, y, n=2){
+  for(let i=0;i<n;i++){
+    const r=Math.random()
+    const type = r<0.55 ? 'star' : r<0.82 ? 'dot' : 'lightning'
+    particles.push(new Particle(
+      x+(Math.random()-.5)*8,
+      y+(Math.random()-.5)*8,
+      type
+    ))
+  }
+}
+
+function drawLoop(){
+  requestAnimationFrame(drawLoop)
+  ctx.clearRect(0,0,W,H)
+  if(!weddingActive){ particles=[]; return }
+  particles=particles.filter(p=>!p.dead())
+  particles.forEach(p=>{ p.update(); p.draw(ctx) })
+}
+requestAnimationFrame(drawLoop)
+
+/* ════════════════════════════════════════
+   CURSOR STATE
+════════════════════════════════════════ */
+let activeCursor=0
+let weddingActive=false
+let mx=-100, my=-100
+let r1x=-100, r1y=-100
+let b2x=-100, b2y=-100
+let r4x=-100, r4y=-100
+
+const els={
+  c1dot:  document.getElementById('c1-dot'),
+  c1ring: document.getElementById('c1-ring'),
+  c1lbl:  document.getElementById('c1-label'),
+  c2blob: document.getElementById('c2-blob'),
+  c2dot:  document.getElementById('c2-dot'),
+  c3dot:  document.getElementById('c3-dot'),
+  c3pill: document.getElementById('c3-pill'),
+  c4core: document.getElementById('c4-core'),
+  c4ring: document.getElementById('c4-ring'),
+}
+
+function hideAll(){
+  Object.values(els).forEach(e=>e.style.display='none')
+}
+
+function showCursor(n){
+  hideAll()
+  if(n===1){ els.c1dot.style.display='block'; els.c1ring.style.display='block'; els.c1lbl.style.display='block' }
+  if(n===2){ els.c2blob.style.display='block'; els.c2dot.style.display='block' }
+  if(n===3){ els.c3dot.style.display='block'; els.c3pill.style.display='block' }
+  if(n===4){ els.c4core.style.display='block'; els.c4ring.style.display='block' }
+}
+
+function setCursor(n, btn){
+  activeCursor=n
+  weddingActive=(n===4)
+  document.querySelectorAll('.switcher button').forEach(b=>{ b.classList.remove('active','wedding-active') })
+  btn.classList.add(n===4?'wedding-active':'active')
+  showCursor(n)
+  clearClasses()
+}
+
+function clearClasses(){
+  document.body.className=document.body.className
+    .split(' ').filter(c=>!c.startsWith('c1-')&&!c.startsWith('c2-')&&!c.startsWith('c3-')&&!c.startsWith('c4-')).join(' ')
+}
+
+/* ════════════════════════════════════════
+   MOUSE TRACKING
+════════════════════════════════════════ */
+let spawnAccum=0
+
+window.addEventListener('mousemove', e=>{
+  mx=e.clientX; my=e.clientY
+
+  // instant-follow elements
+  const px=mx+'px', py=my+'px'
+  if(activeCursor===1){
+    els.c1dot.style.left=px; els.c1dot.style.top=py
+    els.c1lbl.style.left=px; els.c1lbl.style.top=py
+  }
+  if(activeCursor===2){
+    els.c2dot.style.left=px; els.c2dot.style.top=py
+  }
+  if(activeCursor===3){
+    els.c3dot.style.left=px; els.c3dot.style.top=py
+    els.c3pill.style.left=px; els.c3pill.style.top=py
+  }
+  if(activeCursor===4){
+    els.c4core.style.left=px; els.c4core.style.top=py
+    // spawn sparkles while moving
+    spawnAccum++
+    if(spawnAccum>=2){
+      spawnSparkles(mx, my, Math.random()<0.4?3:2)
+      spawnAccum=0
+    }
+  }
+})
+
+// spring loop for lagging elements
+function lerp(a,b,t){ return a+(b-a)*t }
+;(function springLoop(){
+  r1x=lerp(r1x,mx,.11); r1y=lerp(r1y,my,.11)
+  b2x=lerp(b2x,mx,.07); b2y=lerp(b2y,my,.07)
+  r4x=lerp(r4x,mx,.13); r4y=lerp(r4y,my,.13)
+
+  if(activeCursor===1){ els.c1ring.style.left=r1x+'px'; els.c1ring.style.top=r1y+'px' }
+  if(activeCursor===2){ els.c2blob.style.left=b2x+'px'; els.c2blob.style.top=b2y+'px' }
+  if(activeCursor===4){ els.c4ring.style.left=r4x+'px'; els.c4ring.style.top=r4y+'px' }
+
+  requestAnimationFrame(springLoop)
+})()
+
+/* ════════════════════════════════════════
+   HOVER DETECTION
+════════════════════════════════════════ */
+window.addEventListener('mouseover', e=>{
+  const el=e.target
+  const isCta  = !!el.closest('button,.btn-coral,.btn-outline')
+  const isLink = !!el.closest('.link,a') && !isCta
+  clearClasses()
+
+  if(activeCursor===1){
+    if(isCta){ document.body.classList.add('c1-cta'); const l=el.closest('[data-label]'); els.c1lbl.textContent=l?l.dataset.label:'Voir →' }
+    else if(isLink) document.body.classList.add('c1-link')
+  }
+  if(activeCursor===2){
+    if(isCta) document.body.classList.add('c2-cta')
+    else if(isLink) document.body.classList.add('c2-link')
+  }
+  if(activeCursor===3){
+    if(isCta){ document.body.classList.add('c3-cta'); const l=el.closest('[data-label]'); els.c3pill.textContent=l?l.dataset.label:'Voir →' }
+  }
+  if(activeCursor===4){
+    if(isCta) document.body.classList.add('c4-cta')
+    else if(isLink) document.body.classList.add('c4-link')
+  }
+})
+
+// Burst on click (wedding only)
+window.addEventListener('click', e=>{
+  if(!weddingActive) return
+  for(let i=0;i<18;i++) spawnSparkles(e.clientX, e.clientY, 1)
+})
+</script>
+</body>
+</html>
