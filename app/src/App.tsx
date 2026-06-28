@@ -558,7 +558,7 @@ export default function App() {
         {/* video + overlays */}
         <motion.div className="absolute inset-0" style={{ y: heroVY }}>
           <div className="absolute inset-0 bg-black" />
-          <video autoPlay muted loop playsInline
+          <video autoPlay muted loop playsInline preload="auto"
             className="absolute inset-0 w-full h-full object-cover"
             style={{ filter: 'brightness(0.92) contrast(1.08) saturate(0.82)', left: '5%', width: '97%' }}>
             <source src="/hero.mp4" type="video/mp4" />
