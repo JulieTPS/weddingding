@@ -305,15 +305,15 @@ function NfcScene() {
   const wrap = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: wrap, offset: ['start start', 'end end'] })
 
-  const p1y  = useTransform(scrollYProgress, [0, 0.33], ['0%', '-8%'])
-  const p1sc = useTransform(scrollYProgress, [0, 0.33], [1, 0.92])
-  const p1op = useTransform(scrollYProgress, [0.22, 0.36], [1, 0])
+  const p1y  = useTransform(scrollYProgress, [0, 0.42], ['0%', '-10%'])
+  const p1sc = useTransform(scrollYProgress, [0, 0.42], [1, 0.86])
+  const p1op = useTransform(scrollYProgress, [0.28, 0.42], [1, 0])
 
-  const p2y  = useTransform(scrollYProgress, [0.2, 0.46], ['100%', '0%'])
-  const p2sc = useTransform(scrollYProgress, [0.46, 0.66], [1, 0.92])
-  const p2op = useTransform(scrollYProgress, [0.55, 0.68], [1, 0])
+  const p2y  = useTransform(scrollYProgress, [0.2, 0.44], ['100%', '0%'])
+  const p2sc = useTransform(scrollYProgress, [0.58, 0.84], [1, 0.86])
+  const p2op = useTransform(scrollYProgress, [0.72, 0.84], [1, 0])
 
-  const p3y  = useTransform(scrollYProgress, [0.54, 0.78], ['100%', '0%'])
+  const p3y  = useTransform(scrollYProgress, [0.70, 0.90], ['100%', '0%'])
 
   const panels = [
     { y: p1y, scale: p1sc, opacity: p1op, z: 1 },
