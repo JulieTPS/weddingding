@@ -378,15 +378,77 @@ function NfcScene() {
 
               {/* image à proportion naturelle, droite */}
               <div className="flex-1 flex items-center justify-center md:justify-end h-full py-10 z-10">
-                <img src={panel.img} alt={panel.h}
-                  className="rounded-2xl"
-                  style={{
-                    maxHeight: '82vh',
-                    maxWidth: '100%',
-                    width: 'auto',
-                    objectFit: 'contain',
-                    boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
-                  }} />
+                <div className="relative" style={{ maxHeight: '82vh' }}>
+                  <img src={panel.img} alt={panel.h}
+                    className="rounded-2xl"
+                    style={{
+                      maxHeight: '82vh',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      objectFit: 'contain',
+                      boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
+                      display: 'block',
+                    }} />
+
+                  {/* anneaux NFC + callout — panel 2 uniquement */}
+                  {i === 1 && (
+                    <div className="absolute inset-0 pointer-events-none">
+
+                      {/* annotation NFC — positionné sur le sticker de la carte */}
+                      <div className="absolute" style={{ left: '38%', top: '82%' }}>
+
+                        {/* anneaux pulsants */}
+                        {[0, 1, 2].map(j => (
+                          <div key={j} className="nfc-ring absolute rounded-full"
+                            style={{
+                              width: 48, height: 48,
+                              top: -24, left: -24,
+                              border: '1px solid rgba(232,130,106,0.5)',
+                              animationDelay: `${j * 0.7}s`,
+                            }} />
+                        ))}
+
+                        {/* point central avec halo */}
+                        <div className="absolute rounded-full"
+                          style={{
+                            width: 8, height: 8,
+                            top: -4, left: -4,
+                            background: '#e8826a',
+                            boxShadow: '0 0 0 3px rgba(232,130,106,0.2), 0 0 12px rgba(232,130,106,0.6)',
+                          }} />
+
+                        {/* SVG ligne fine vers le label */}
+                        <svg className="absolute" style={{ left: -100, top: -58, overflow: 'visible', pointerEvents: 'none' }}
+                          width="100" height="58" viewBox="0 0 100 58">
+                          <line x1="100" y1="58" x2="12" y2="6"
+                            stroke="rgba(232,130,106,0.4)" strokeWidth="0.8" />
+                          <circle cx="12" cy="6" r="2" fill="rgba(232,130,106,0.6)" />
+                        </svg>
+
+                        {/* label pill */}
+                        <div className="absolute flex items-center gap-1.5 font-sans whitespace-nowrap"
+                          style={{
+                            left: -196, top: -72,
+                            fontSize: '0.6rem',
+                            letterSpacing: '0.14em',
+                            textTransform: 'uppercase',
+                            color: 'rgba(237,232,222,0.9)',
+                            background: 'rgba(18,16,13,0.82)',
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
+                            padding: '4px 10px 4px 8px',
+                            borderRadius: 999,
+                            border: '1px solid rgba(232,130,106,0.4)',
+                          }}>
+                          <span className="rounded-full inline-block"
+                            style={{ width: 5, height: 5, background: '#e8826a', flexShrink: 0 }} />
+                          Votre site, caché ici
+                        </div>
+
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
             </div>
