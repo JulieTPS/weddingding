@@ -339,11 +339,11 @@ function NfcScene() {
 
             {/* ── MOBILE : blurred bg + flexbox image/texte ── */}
             <div className="md:hidden absolute inset-0 overflow-hidden flex flex-col">
-              {/* fond flouté */}
+              {/* fond flouté très assombri */}
               <img src={panel.img} alt="" aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ filter: 'blur(24px)', transform: 'scale(1.2)', opacity: 0.4 }} />
-              <div className="absolute inset-0" style={{ background: 'rgba(12,11,9,0.5)' }} />
+                style={{ filter: 'blur(28px)', transform: 'scale(1.2)', opacity: 0.18 }} />
+              <div className="absolute inset-0" style={{ background: 'rgba(12,11,9,0.82)' }} />
 
               {/* zone image — flex 1 pour prendre l'espace disponible */}
               <div className="relative flex-1 flex items-center justify-center px-6 pt-20 pb-2 z-10">
