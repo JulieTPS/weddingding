@@ -209,6 +209,48 @@ function Mag({ children, className = '' }: { children: React.ReactNode; classNam
 }
 
 /* ══ Fade-up helper ═════════════════════════════════════════ */
+/* ══ Feature card — tilt 3D + glow cursor ══════════════════ */
+function FeatureCard({ n, title, body, index }: { n: string; title: string; body: string; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const rotateX = useSpring(useTransform(y, [-50, 50], [6, -6]), { stiffness: 300, damping: 30 })
+  const rotateY = useSpring(useTransform(x, [-50, 50], [-6, 6]), { stiffness: 300, damping: 30 })
+  const glowX = useSpring(useTransform(x, [-50, 50], [0, 100]), { stiffness: 200, damping: 25 })
+  const glowY = useSpring(useTransform(y, [-50, 50], [0, 100]), { stiffness: 200, damping: 25 })
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = ref.current!.getBoundingClientRect()
+    x.set(e.clientX - r.left - r.width / 2)
+    y.set(e.clientY - r.top - r.height / 2)
+  }
+  const onLeave = () => { x.set(0); y.set(0) }
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 800 }}
+      whileHover="hover"
+      initial="rest"
+      variants={{ rest: { scale: 1, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }, hover: { scale: 1.02, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', transition: { duration: 0.25 } } }}
+      className="relative flex gap-5 p-6 md:p-8 rounded-xl overflow-hidden cursor-default">
+      <div className="absolute inset-0 rounded-xl" style={{ background: 'white', border: '1px solid #ece8e4' }} />
+      <motion.span className="absolute inset-0 rounded-xl pointer-events-none"
+        style={{ background: 'linear-gradient(105deg, transparent 20%, rgba(200,168,110,0.12) 40%, rgba(240,210,140,0.22) 50%, rgba(200,168,110,0.12) 60%, transparent 80%)', x: '-140%' }}
+        variants={{ rest: { x: '-140%' }, hover: { x: '140%', transition: { duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] } } }} />
+      <div className="relative z-10 flex gap-5 w-full">
+        <span className="font-sans text-[0.58rem] tracking-[0.2em] shrink-0 mt-1" style={{ color: '#e8826a' }}>{n}</span>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-sans font-medium text-[0.95rem]" style={{ color: '#2c2c2c' }}>{title}</h3>
+          <p className="font-sans font-light text-[0.82rem] leading-relaxed" style={{ color: '#9a9590' }}>{body}</p>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 const fu = (d = 0) => ({
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
@@ -282,14 +324,14 @@ const NFC_PANELS = [
     img: '/card-photo.png',
     n: '01',
     h: 'Fabriquée pour durer autant que le souvenir',
-    b: 'Papier coton 350g, dorure à chaud, sticker époxy serti à la main. Votre faire-part est conçu comme un objet précieux — pas un carton qu\'on jette.',
+    b: 'Papier coton 350g, dorure à chaud, sticker époxy serti à la main. Votre faire-part est conçu comme un objet précieux, pas un carton qu\'on jette.',
     pos: 'object-top',
   },
   {
     img: '/tap-photo.png',
     n: '02',
     h: 'Vos invités ne s\'y attendent pas',
-    b: 'Ils approchent leur téléphone, par curiosité. Et ça s\'ouvre. Pas d\'app, pas de QR code à photographier — juste de l\'étonnement, puis du sourire.',
+    b: 'Ils approchent leur téléphone, par curiosité. Et ça s\'ouvre. Pas d\'app, pas de QR code à photographier. Juste de l\'étonnement, puis du sourire.',
     pos: 'object-center',
   },
   {
@@ -463,10 +505,10 @@ function NfcScene() {
 
 /* ══ FAQ data ═══════════════════════════════════════════════ */
 const FAQS = [
-  { q: "Compatible avec tous les téléphones ?", a: "iPhone 7+ (iOS 14+) et tous Android NFC — 95%+ des smartphones. Un QR code au dos couvre les 5% restants." },
+  { q: "Compatible avec tous les téléphones ?", a: "iPhone 7+ (iOS 14+) et tous Android NFC, soit 95%+ des smartphones. Un QR code au dos couvre les 5% restants." },
   { q: "Comment mes invités savent-ils qu'ils doivent tapper ?", a: "Une mention discrète sur la carte indique la manipulation. Taux de scan spontané supérieur à 90% dans nos retours." },
   { q: "Délai de réception ?", a: "5 jours ouvrés après validation de votre design. Commandez 3-4 mois avant le jour J." },
-  { q: "Puis-je modifier mon site après livraison ?", a: "Oui, à tout moment. La puce NFC pointe vers une URL fixe — vos invités arrivent toujours sur la dernière version." },
+  { q: "Puis-je modifier mon site après livraison ?", a: "Oui, à tout moment. La puce NFC pointe vers une URL fixe : vos invités arrivent toujours sur la dernière version." },
   { q: "Que se passe-t-il après 24 mois ?", a: "Renouvellement à tarif préférentiel, ou export complet de vos données. Votre contenu vous appartient." },
 ]
 
@@ -650,7 +692,7 @@ export default function App() {
               transition={{ delay: 0.65, duration: 0.7 }}
               className="font-sans font-light leading-relaxed mb-8"
               style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1.05rem' }}>
-              100 faire-parts NFC premium + site de mariage inclus. Vos invités approchent leur téléphone — votre site s'ouvre instantanément.
+              100 faire-parts NFC premium + site de mariage inclus. Vos invités approchent leur téléphone, votre site s'ouvre instantanément.
             </motion.p>
 
             <AnimatePresence mode="wait">
@@ -824,50 +866,34 @@ export default function App() {
       <section className="py-20 md:py-32 px-6 md:px-16" style={{ background: '#f8f7f5' }}>
         <div className="max-w-5xl mx-auto">
 
-          <div className="mb-14 md:mb-18">
-            <motion.p {...fu()} className="font-sans text-[0.6rem] tracking-[0.28em] uppercase mb-4" style={{ color: '#e8826a' }}>
-              Pourquoi WeddingDing
-            </motion.p>
-            <motion.h2 {...fu(0.08)} className="font-serif leading-[1.05]"
-              style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', color: '#2c2c2c' }}>
-              Tout ce que vous vouliez.<br />
-              <em style={{ color: '#e8826a', fontStyle: 'normal' }}>Sans les contraintes.</em>
+          <div className="mb-14 md:mb-18 text-center">
+            <motion.p {...fu()} className="font-pacifico text-[1rem] mb-4" style={{ color: '#e8826a' }}>WeddingDing</motion.p>
+            <motion.h2 {...fu(0.08)} className="font-serif leading-[1.08] tracking-[-0.02em]"
+              style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: '#2c2c2c' }}>
+              Beau à regarder.<br />
+              <em style={{ color: '#e8826a' }}>Magique à recevoir.</em>
             </motion.h2>
+            <motion.div {...fu(0.16)} className="flex items-center gap-3 justify-center mt-6">
+              <div className="h-px w-10" style={{ background: '#c8a86e' }} />
+              <span className="font-sans text-[0.52rem] tracking-[0.22em] uppercase" style={{ color: '#c8a86e' }}>Ce qui change tout</span>
+              <div className="h-px w-10" style={{ background: '#c8a86e' }} />
+            </motion.div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             {[
-              { n: '01', title: 'Vos invités n\'installent rien', body: 'Un tap sur la carte — le site s\'ouvre instantanément. Pas d\'app, pas de QR code, pas d\'explication à donner.' },
-              { n: '02', title: 'Vous gardez le contrôle jusqu\'au dernier moment', body: 'Salle changée, horaire décalé ? Modifiez en ligne — tous vos invités voient la mise à jour en temps réel, même après l\'envoi.' },
+              { n: '01', title: 'Vos invités n\'installent rien', body: 'Un tap sur la carte, le site s\'ouvre. Pas d\'app, pas de QR code, pas d\'explication à donner.' },
+              { n: '02', title: 'Vous gardez le contrôle jusqu\'au dernier moment', body: 'Salle changée, horaire décalé ? Modifiez en ligne et tous vos invités voient la mise à jour en temps réel, même après l\'envoi.' },
               { n: '03', title: 'Plus un seul RSVP perdu', body: 'Chaque réponse arrive directement dans votre tableau de bord. Fini les SMS oubliés et les listes Excel qui se contredisent.' },
-              { n: '04', title: 'Une carte aussi belle que votre mariage', body: 'Papier coton 350g, dorure à chaud, gravure à sec. Fabriquée à partir de votre identité visuelle, pas d\'un template générique.' },
-              { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones — iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
+              { n: '04', title: 'Une carte aussi belle que votre mariage', body: 'Papier coton 350g, dorure à chaud, gravure à sec. Fabriquée sur mesure, pas à partir d\'un template générique.' },
+              { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones, iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
               { n: '06', title: 'Entre vos mains en 5 jours', body: 'Cartes programmées, testées et emballées avec soin. Expédiées sous 5 jours ouvrés, partout en France.' },
             ].map(({ n, title, body }, i) => (
-              <motion.div key={i} {...fu(i * 0.06)}
-                className="flex gap-5 p-6 md:p-8 rounded-2xl"
-                style={{ background: 'white', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
-                <span className="font-sans text-[0.58rem] tracking-[0.2em] shrink-0 mt-1" style={{ color: '#e8826a' }}>{n}</span>
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-sans font-medium text-[0.95rem]" style={{ color: '#2c2c2c' }}>{title}</h3>
-                  <p className="font-sans font-light text-[0.82rem] leading-relaxed" style={{ color: '#9a9590' }}>{body}</p>
-                </div>
+              <motion.div key={i} {...fu(i * 0.06)}>
+                <FeatureCard n={n} title={title} body={body} index={i} />
               </motion.div>
             ))}
           </div>
-
-          {/* Social proof intégrée */}
-          <motion.div {...fu(0.3)} className="mt-10 md:mt-12 flex flex-col md:flex-row items-center gap-6 p-7 md:p-9 rounded-2xl"
-            style={{ background: 'white', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', borderLeft: '3px solid #e8826a' }}>
-            <div className="flex flex-col gap-3 text-center md:text-left">
-              <p className="font-serif text-[1.05rem] leading-snug" style={{ color: '#2c2c2c' }}>
-                "On a changé l'heure du vin d'honneur à J-2. En 30 secondes, tous nos invités étaient informés — sans un seul SMS."
-              </p>
-              <p className="font-sans text-[0.72rem] tracking-[0.08em]" style={{ color: '#b0aca6' }}>
-                Camille &amp; Antoine — Mariage en Provence, juin 2025
-              </p>
-            </div>
-          </motion.div>
 
         </div>
       </section>
@@ -922,10 +948,10 @@ export default function App() {
               </h2>
             </div>
             <motion.p {...fu(0.2)} className="font-sans font-light leading-[1.8] mb-8 max-w-sm" style={{ color: '#7a7a7a', fontSize: '0.95rem' }}>
-              Papier 350g finition mat. Sticker 3D résine époxy. La puce NFC est glissée sous le sticker — invisible, indécelable. L'effet de surprise est intact.
+              Papier 350g finition mat. Sticker 3D résine époxy. La puce NFC est glissée sous le sticker, invisible et indécelable. L'effet de surprise est intact.
             </motion.p>
             <ul className="space-y-2.5 list-none mb-8">
-              {['Puce NTAG213 — standard NFC mondial','Compatible iPhone 7+ et tous Android NFC','QR code au dos — couverture 100%','5 designs de stickers au lancement','Chaque puce testée avant envoi'].map((t, i) => (
+              {['Puce NTAG213, standard NFC mondial','Compatible iPhone 7+ et tous Android NFC','QR code au dos pour une couverture 100%','5 designs de stickers au lancement','Chaque puce testée avant envoi'].map((t, i) => (
                 <motion.li key={i} {...fu(0.25 + i * 0.055)} className="flex items-center gap-2.5 font-sans text-[0.9rem]" style={{ color: '#2c2c2c' }}>
                   <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: '#e8826a' }} />{t}
                 </motion.li>
