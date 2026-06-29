@@ -820,6 +820,58 @@ export default function App() {
         </div>
       </section>
 
+      {/* ════ FEATURES ═══════════════════════════════════════════ */}
+      <section className="py-20 md:py-32 px-6 md:px-16" style={{ background: '#f8f7f5' }}>
+        <div className="max-w-5xl mx-auto">
+
+          <div className="mb-14 md:mb-18">
+            <motion.p {...fu()} className="font-sans text-[0.6rem] tracking-[0.28em] uppercase mb-4" style={{ color: '#e8826a' }}>
+              Pourquoi WeddingDing
+            </motion.p>
+            <motion.h2 {...fu(0.08)} className="font-serif leading-[1.05]"
+              style={{ fontSize: 'clamp(2rem, 4vw, 3.2rem)', color: '#2c2c2c' }}>
+              Tout ce que vous vouliez.<br />
+              <em style={{ color: '#e8826a', fontStyle: 'normal' }}>Sans les contraintes.</em>
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+            {[
+              { n: '01', title: 'Vos invités n\'installent rien', body: 'Un tap sur la carte — le site s\'ouvre instantanément. Pas d\'app, pas de QR code, pas d\'explication à donner.' },
+              { n: '02', title: 'Vous gardez le contrôle jusqu\'au dernier moment', body: 'Salle changée, horaire décalé ? Modifiez en ligne — tous vos invités voient la mise à jour en temps réel, même après l\'envoi.' },
+              { n: '03', title: 'Plus un seul RSVP perdu', body: 'Chaque réponse arrive directement dans votre tableau de bord. Fini les SMS oubliés et les listes Excel qui se contredisent.' },
+              { n: '04', title: 'Une carte aussi belle que votre mariage', body: 'Papier coton 350g, dorure à chaud, gravure à sec. Fabriquée à partir de votre identité visuelle, pas d\'un template générique.' },
+              { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones — iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
+              { n: '06', title: 'Entre vos mains en 5 jours', body: 'Cartes programmées, testées et emballées avec soin. Expédiées sous 5 jours ouvrés, partout en France.' },
+            ].map(({ n, title, body }, i) => (
+              <motion.div key={i} {...fu(i * 0.06)}
+                className="flex gap-5 p-6 md:p-8 rounded-2xl"
+                style={{ background: 'white', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
+                <span className="font-sans text-[0.58rem] tracking-[0.2em] shrink-0 mt-1" style={{ color: '#e8826a' }}>{n}</span>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-sans font-medium text-[0.95rem]" style={{ color: '#2c2c2c' }}>{title}</h3>
+                  <p className="font-sans font-light text-[0.82rem] leading-relaxed" style={{ color: '#9a9590' }}>{body}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Social proof intégrée */}
+          <motion.div {...fu(0.3)} className="mt-10 md:mt-12 flex flex-col md:flex-row items-center gap-6 p-7 md:p-9 rounded-2xl"
+            style={{ background: 'white', boxShadow: '0 2px 12px rgba(0,0,0,0.05)', borderLeft: '3px solid #e8826a' }}>
+            <div className="flex flex-col gap-3 text-center md:text-left">
+              <p className="font-serif text-[1.05rem] leading-snug" style={{ color: '#2c2c2c' }}>
+                "On a changé l'heure du vin d'honneur à J-2. En 30 secondes, tous nos invités étaient informés — sans un seul SMS."
+              </p>
+              <p className="font-sans text-[0.72rem] tracking-[0.08em]" style={{ color: '#b0aca6' }}>
+                Camille &amp; Antoine — Mariage en Provence, juin 2025
+              </p>
+            </div>
+          </motion.div>
+
+        </div>
+      </section>
+
       {/* ════ COMMENT ÇA MARCHE ══════════════════════════════════ */}
       <section className="py-20 md:py-32 px-8 md:px-16" style={{ background: '#f8f7f6' }}>
         <div className="max-w-5xl mx-auto">
