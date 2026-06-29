@@ -346,29 +346,29 @@ function FeaturesCarousel() {
     } else { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600) }
   }
 
-  // ── mobile : touch events non-passifs avec direction lock ──────
+  // ── mobile : touch natif — touch-action:pan-y gère la séparation browser/JS ──
   useEffect(() => {
     const el = trackRef.current
     if (!el) return
-    let sx = 0, sy = 0, dir: 'h' | 'v' | null = null
+    let sx = 0, sy = 0, intentH = false
 
     const onTS = (e: TouchEvent) => {
-      sx = e.touches[0].clientX; sy = e.touches[0].clientY; dir = null
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; intentH = false
       if (resumeTimer.current) clearTimeout(resumeTimer.current)
-      autoOn.current = false; dragging.current = true; setIsDragging(true)
+      autoOn.current = false
       ptrHistory.current = []; lastPtr.current = sx; lastT.current = performance.now()
     }
     const onTM = (e: TouchEvent) => {
-      if (!dragging.current) return
       const cx = e.touches[0].clientX, cy = e.touches[0].clientY
-      if (!dir) {
+      // détecte intention au premier move significatif
+      if (!intentH) {
         const adx = Math.abs(cx - sx), ady = Math.abs(cy - sy)
-        if (adx < 6 && ady < 6) return
-        dir = adx >= ady ? 'h' : 'v'
-        if (dir === 'v') { dragging.current = false; setIsDragging(false); return }
+        if (adx < 4 && ady < 4) return
+        if (ady > adx * 1.2) return   // vertical dominant → laisse défiler la page
+        intentH = true
+        dragging.current = true; setIsDragging(true)
       }
-      if (dir !== 'h') return
-      e.preventDefault()
+      if (!dragging.current) return
       const now = performance.now()
       const dx = cx - lastPtr.current, dt = Math.max(1, now - lastT.current)
       ptrHistory.current.push({ dx, dt }); if (ptrHistory.current.length > 5) ptrHistory.current.shift()
@@ -379,21 +379,23 @@ function FeaturesCarousel() {
       x.set(next)
     }
     const onTE = () => {
-      if (!dragging.current) return
       dragging.current = false; setIsDragging(false)
-      if (dir !== 'h') return
+      if (!intentH) return
       const hist = ptrHistory.current
       const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
       snapNearestRef.current(avgVel * 80)
     }
 
+    // passive:false sur touchmove pour pouvoir appeler preventDefault si besoin
     el.addEventListener('touchstart', onTS, { passive: true })
     el.addEventListener('touchmove', onTM, { passive: false })
     el.addEventListener('touchend', onTE, { passive: true })
+    el.addEventListener('touchcancel', onTE, { passive: true })
     return () => {
       el.removeEventListener('touchstart', onTS)
       el.removeEventListener('touchmove', onTM)
       el.removeEventListener('touchend', onTE)
+      el.removeEventListener('touchcancel', onTE)
     }
   }, [x])
 
@@ -436,7 +438,7 @@ function FeaturesCarousel() {
       {/* zone de pause = uniquement le track */}
       <div className="relative"
         ref={trackRef}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
