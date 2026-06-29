@@ -11,11 +11,12 @@ const FEATURES = [
   { title: 'Livré avant que vous stressiez.', body: '5 jours ouvrés après validation. Chaque puce testée, chaque carte emballée à la main.' },
 ]
 
+const ease: any = [0.22, 1, 0.36, 1]
 const fu = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-60px' as never },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as unknown as any, delay },
+  transition: { duration: 0.7, ease, delay },
 })
 
 /* ── VERSION G : Éditorial magazine — Vogue/i-D ────────────── */
@@ -302,7 +303,7 @@ function VersionL() {
       <div className="max-w-5xl mx-auto relative z-10">
 
         {/* titre avec word reveal + parallax */}
-        <motion.div style={{ y: parallaxY }} className="mb-24 pb-12" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <motion.div style={{ y: parallaxY, borderBottom: '1px solid rgba(255,255,255,0.07)' }} className="mb-24 pb-12">
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.1 }}
             className="font-sans text-[0.55rem] tracking-[0.3em] uppercase mb-6" style={{ color: 'rgba(200,168,110,0.6)' }}>
@@ -510,8 +511,8 @@ function VersionP() {
           {FEATURES.map(({ title, body }, i) => (
             <motion.div key={i}
               onViewportEnter={() => setActive(i)}
-              viewport={{ amount: 0.5 }}
               {...fu(i * 0.05)}
+              viewport={{ once: true, amount: 0.5, margin: '-60px' as never }}
               className="flex flex-col gap-3">
               <p className="font-sans text-[0.5rem] tracking-[0.22em] uppercase" style={{ color: '#c8a86e' }}>0{i + 1}</p>
               <h3 className="font-serif text-[1.4rem] leading-[1.15] tracking-[-0.01em]" style={{ color: '#2c2c2c' }}>{title}</h3>
