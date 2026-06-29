@@ -209,39 +209,90 @@ function Mag({ children, className = '' }: { children: React.ReactNode; classNam
 }
 
 /* ══ Fade-up helper ═════════════════════════════════════════ */
-/* ══ Feature card — tilt 3D + glow cursor ══════════════════ */
+/* ══ Feature card — tilt 3D + sweep doré auto + stagger LR ══ */
 function FeatureCard({ n, title, body, index }: { n: string; title: string; body: string; index: number }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const rotateX = useSpring(useTransform(y, [-50, 50], [6, -6]), { stiffness: 300, damping: 30 })
-  const rotateY = useSpring(useTransform(x, [-50, 50], [-6, 6]), { stiffness: 300, damping: 30 })
-  const glowX = useSpring(useTransform(x, [-50, 50], [0, 100]), { stiffness: 200, damping: 25 })
-  const glowY = useSpring(useTransform(y, [-50, 50], [0, 100]), { stiffness: 200, damping: 25 })
+  const cardRef = useRef<HTMLDivElement>(null)
+  const inView = useInView(cardRef, { once: true, margin: '-60px' })
 
+  // tilt 3D
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const rotateX = useSpring(useTransform(my, [-50, 50], [6, -6]), { stiffness: 300, damping: 30 })
+  const rotateY = useSpring(useTransform(mx, [-50, 50], [-6, 6]), { stiffness: 300, damping: 30 })
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const r = ref.current!.getBoundingClientRect()
-    x.set(e.clientX - r.left - r.width / 2)
-    y.set(e.clientY - r.top - r.height / 2)
+    const r = cardRef.current!.getBoundingClientRect()
+    mx.set(e.clientX - r.left - r.width / 2)
+    my.set(e.clientY - r.top - r.height / 2)
   }
-  const onLeave = () => { x.set(0); y.set(0) }
+  const onLeave = () => { mx.set(0); my.set(0) }
+
+  // stagger alterné gauche/droite
+  const fromX = index % 2 === 0 ? -28 : 28
 
   return (
     <motion.div
-      ref={ref}
+      ref={cardRef}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 800 }}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 900 }}
+      initial={{ opacity: 0, y: 48, rotateX: 18, scale: 0.92, filter: 'blur(6px)' }}
+      animate={inView ? { opacity: 1, y: 0, rotateX: 0, scale: 1, filter: 'blur(0px)' } : {}}
+      transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1], delay: index * 0.09 }}
       whileHover="hover"
-      initial="rest"
-      variants={{ rest: { scale: 1, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }, hover: { scale: 1.02, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', transition: { duration: 0.25 } } }}
+      variants={{
+        rest: { boxShadow: '0 2px 12px rgba(0,0,0,0.04)' },
+        hover: { scale: 1.02, boxShadow: '0 12px 40px rgba(0,0,0,0.10)', transition: { duration: 0.25 } },
+      }}
       className="relative flex gap-5 p-6 md:p-8 rounded-xl overflow-hidden cursor-default">
+
       <div className="absolute inset-0 rounded-xl" style={{ background: 'white', border: '1px solid #ece8e4' }} />
-      <motion.span className="absolute inset-0 rounded-xl pointer-events-none"
+
+      {/* sweep doré au hover */}
+      <motion.span className="absolute inset-0 pointer-events-none"
         style={{ background: 'linear-gradient(105deg, transparent 20%, rgba(200,168,110,0.12) 40%, rgba(240,210,140,0.22) 50%, rgba(200,168,110,0.12) 60%, transparent 80%)', x: '-140%' }}
         variants={{ rest: { x: '-140%' }, hover: { x: '140%', transition: { duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] } } }} />
-      <div className="relative z-10 flex gap-5 w-full">
-        <span className="font-sans text-[0.58rem] tracking-[0.2em] shrink-0 mt-1" style={{ color: '#e8826a' }}>{n}</span>
+
+      <div className="relative z-10 flex gap-4 w-full">
+        <div className="shrink-0 relative flex items-center justify-center" style={{ width: 44, height: 44, flexShrink: 0 }}>
+          {/* paillettes 3D qui flippent */}
+          {[
+            { top: '-4%', left: '68%', size: 10, dur: '3.8s', delay: `${index*0.5}s`,        rot: '12deg',  color: '#c8a86e', char: '✦' },
+            { top: '72%', left: '82%', size: 8,  dur: '4.4s', delay: `${index*0.5+0.8}s`,    rot: '-8deg',  color: '#e8826a', char: '✦' },
+            { top: '82%', left: '6%',  size: 9,  dur: '5.1s', delay: `${index*0.5+1.6}s`,    rot: '20deg',  color: '#fff',    char: '✧' },
+            { top: '-2%', left: '14%', size: 7,  dur: '4.2s', delay: `${index*0.5+2.5}s`,    rot: '-15deg', color: '#c8a86e', char: '✦' },
+            { top: '42%', left: '98%', size: 7,  dur: '5.6s', delay: `${index*0.5+0.4}s`,    rot: '5deg',   color: '#e8826a', char: '✧' },
+            { top: '38%', left: '-4%', size: 6,  dur: '4.8s', delay: `${index*0.5+3.2}s`,    rot: '-20deg', color: '#fff',    char: '✦' },
+            { top: '20%', left: '90%', size: 6,  dur: '6.0s', delay: `${index*0.5+1.2}s`,    rot: '30deg',  color: '#c8a86e', char: '✧' },
+            { top: '60%', left: '-2%', size: 5,  dur: '3.5s', delay: `${index*0.5+2.0}s`,    rot: '-5deg',  color: '#e8826a', char: '✦' },
+          ].map((s, j) => (
+            <span key={j} className="paillette" style={{
+              top: s.top, left: s.left,
+              fontSize: s.size,
+              color: s.color,
+              '--r': s.rot,
+              animationDuration: s.dur,
+              animationDelay: s.delay,
+              textShadow: `0 0 3px ${s.color}`,
+            } as React.CSSProperties}>{s.char}</span>
+          ))}
+          {/* burst d'étincelles à l'entrée */}
+          {inView && [0,1,2,3,4,5,6,7].map(j => (
+            <div key={j} className="spark" style={{
+              '--a': `${j * 45}deg`,
+              background: j % 2 === 0 ? '#e8826a' : '#c8a86e',
+              boxShadow: `0 0 5px ${j % 2 === 0 ? '#e8826a' : '#c8a86e'}`,
+              animationDelay: `${j * 0.05 + index * 0.12}s`,
+            } as React.CSSProperties} />
+          ))}
+          <div className="relative flex items-center justify-center rounded-full z-10" style={{ width: 36, height: 36, background: '#e8826a' }}>
+          {index === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M4.5 12.5C4.5 8.4 7.9 5 12 5s7.5 3.4 7.5 7.5"/><path d="M8 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/></svg>}
+          {index === 1 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20V8"/><path d="M12 8C12 8 15 4 19 5C16 6 13 10 13 13"/><path d="M12 13C12 13 9 11 7 7C6 4 8 2 10 3C9 6 11 10 12 13"/></svg>}
+          {index === 2 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12l9 5 9-5"/><path d="M8 8V6a4 4 0 018 0v2"/></svg>}
+          {index === 3 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21C12 21 3 15 3 9a5 5 0 0110-1 5 5 0 0110 1c0 6-9 12-9 12z"/></svg>}
+          {index === 4 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>}
+          {index === 5 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M5 7l1.5-3h11L19 7"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg>}
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
           <h3 className="font-sans font-medium text-[0.95rem]" style={{ color: '#2c2c2c' }}>{title}</h3>
           <p className="font-sans font-light text-[0.82rem] leading-relaxed" style={{ color: '#9a9590' }}>{body}</p>
@@ -889,9 +940,7 @@ export default function App() {
               { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones, iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
               { n: '06', title: 'Entre vos mains en 5 jours', body: 'Cartes programmées, testées et emballées avec soin. Expédiées sous 5 jours ouvrés, partout en France.' },
             ].map(({ n, title, body }, i) => (
-              <motion.div key={i} {...fu(i * 0.06)}>
-                <FeatureCard n={n} title={title} body={body} index={i} />
-              </motion.div>
+              <FeatureCard key={i} n={n} title={title} body={body} index={i} />
             ))}
           </div>
 
