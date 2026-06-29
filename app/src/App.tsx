@@ -277,97 +277,125 @@ function FeaturesCarousel() {
     x.set(next)
   })
 
-  const isMobileRef = useRef(cardW < CARD_W)
-  useEffect(() => { isMobileRef.current = cardW < CARD_W }, [cardW])
+  const isMobileRef  = useRef(cardW < CARD_W)
+  const cardWRef     = useRef(cardW)
+  const totalRef     = useRef(TOTAL)
+  useEffect(() => { isMobileRef.current = cardW < CARD_W; cardWRef.current = cardW; totalRef.current = TOTAL }, [cardW, TOTAL])
 
-  // snap à la card la plus proche — court-circuit TOTAL pour rester sur le chemin court
+  const trackRef = useRef<HTMLDivElement>(null)
+  const snapNearestRef = useRef<(v?: number) => void>(() => {})
+
+  // snap à la card la plus proche (chemin court dans l'infini)
   const snapNearest = useCallback((velocityHint = 0) => {
+    const cw = cardWRef.current
+    const tot = totalRef.current
     const xVal = x.get()
-    const cardStep = cardW + GAP
+    const cardStep = cw + GAP
     const viewCenter = window.innerWidth / 2
-    // cherche dans les 3 copies la card la plus proche + hint de vélocité
     let bestIdx = 0, minDist = Infinity
     for (let i = 0; i < extended.length; i++) {
-      const center = 16 + i * cardStep + xVal + cardW / 2
-      const dist = Math.abs(center - viewCenter - velocityHint * 0.15)
+      const center = 16 + i * cardStep + xVal + cw / 2
+      const dist = Math.abs(center - viewCenter - velocityHint * 0.12)
       if (dist < minDist) { minDist = dist; bestIdx = i }
     }
-    // x cible pour centrer cette card
-    let target = viewCenter - 16 - bestIdx * cardStep - cardW / 2
-    // ramener target près du x actuel (évite le chemin long de l'infini)
-    while (target - xVal > TOTAL / 2) target -= TOTAL
-    while (xVal - target > TOTAL / 2) target += TOTAL
+    let target = viewCenter - 16 - bestIdx * cardStep - cw / 2
+    while (target - xVal > tot / 2) target -= tot
+    while (xVal - target > tot / 2) target += tot
     animate(x, target, {
-      type: 'spring', stiffness: isMobileRef.current ? 320 : 200, damping: 32, restDelta: 0.5,
+      type: 'spring', stiffness: isMobileRef.current ? 340 : 200, damping: 34, restDelta: 0.5,
       onComplete: () => {
-        // normalise après snap
         const cur = x.get()
-        if (cur <= -TOTAL) x.set(cur + TOTAL)
-        if (cur > 0) x.set(cur - TOTAL)
+        if (cur <= -tot) x.set(cur + tot)
+        if (cur > 0) x.set(cur - tot)
         if (!isMobileRef.current) resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800)
       },
     })
-  }, [cardW, TOTAL, x, extended])
+  }, [x, extended])
 
-  const startDrag = (clientX: number) => {
+  useEffect(() => { snapNearestRef.current = snapNearest }, [snapNearest])
+
+  // ── desktop : pointer events (souris) ──────────────────────────
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
-    autoOn.current = false
-    dragging.current = true
-    setIsDragging(true)
-    ptrHistory.current = []
-    lastPtr.current = clientX
-    lastT.current = performance.now()
+    autoOn.current = false; dragging.current = true; setIsDragging(true)
+    ptrHistory.current = []; lastPtr.current = e.clientX; lastT.current = performance.now()
   }
-
-  const moveDrag = (clientX: number) => {
-    if (!dragging.current) return
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse' || !dragging.current) return
     const now = performance.now()
-    const dx  = clientX - lastPtr.current
-    const dt  = Math.max(1, now - lastT.current)
-    ptrHistory.current.push({ dx, dt })
-    if (ptrHistory.current.length > 5) ptrHistory.current.shift()
-    lastPtr.current = clientX
-    lastT.current = now
+    const dx = e.clientX - lastPtr.current, dt = Math.max(1, now - lastT.current)
+    ptrHistory.current.push({ dx, dt }); if (ptrHistory.current.length > 5) ptrHistory.current.shift()
+    lastPtr.current = e.clientX; lastT.current = now
     let next = x.get() + dx
-    if (next <= -TOTAL) next += TOTAL
-    if (next > 0)       next -= TOTAL
+    if (next <= -TOTAL) next += TOTAL; if (next > 0) next -= TOTAL
     x.set(next)
   }
-
-  const endDrag = () => {
-    if (!dragging.current) return
-    dragging.current = false
-    setIsDragging(false)
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse' || !dragging.current) return
+    dragging.current = false; setIsDragging(false)
     const hist = ptrHistory.current
     const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
-    if (isMobileRef.current) {
-      // mobile : snap à la card la plus proche, vélocité comme hint de direction
-      snapNearest(avgVel * 80)
-    } else {
-      // desktop : momentum libre puis reprise auto-scroll
-      const momentum = avgVel * 110
-      if (Math.abs(momentum) > 15) {
-        let target = x.get() + momentum
-        if (target <= -TOTAL) target += TOTAL
-        if (target > 0)       target -= TOTAL
-        animate(x, target, {
-          type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
-          onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) },
-        })
-      } else {
-        resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600)
-      }
-    }
+    const momentum = avgVel * 110
+    if (Math.abs(momentum) > 15) {
+      let target = x.get() + momentum
+      if (target <= -TOTAL) target += TOTAL; if (target > 0) target -= TOTAL
+      animate(x, target, { type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
+        onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) } })
+    } else { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600) }
   }
 
-  // pointer events seulement (couvre desktop ET mobile moderne — pas de double event)
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === 'touch') e.preventDefault()
-    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
-    startDrag(e.clientX)
-  }
-  const onPointerMove = (e: React.PointerEvent) => moveDrag(e.clientX)
-  const onPointerUp   = () => endDrag()
+  // ── mobile : touch events non-passifs avec direction lock ──────
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    let sx = 0, sy = 0, dir: 'h' | 'v' | null = null
+
+    const onTS = (e: TouchEvent) => {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; dir = null
+      if (resumeTimer.current) clearTimeout(resumeTimer.current)
+      autoOn.current = false; dragging.current = true; setIsDragging(true)
+      ptrHistory.current = []; lastPtr.current = sx; lastT.current = performance.now()
+    }
+    const onTM = (e: TouchEvent) => {
+      if (!dragging.current) return
+      const cx = e.touches[0].clientX, cy = e.touches[0].clientY
+      if (!dir) {
+        const adx = Math.abs(cx - sx), ady = Math.abs(cy - sy)
+        if (adx < 6 && ady < 6) return
+        dir = adx >= ady ? 'h' : 'v'
+        if (dir === 'v') { dragging.current = false; setIsDragging(false); return }
+      }
+      if (dir !== 'h') return
+      e.preventDefault()
+      const now = performance.now()
+      const dx = cx - lastPtr.current, dt = Math.max(1, now - lastT.current)
+      ptrHistory.current.push({ dx, dt }); if (ptrHistory.current.length > 5) ptrHistory.current.shift()
+      lastPtr.current = cx; lastT.current = now
+      let next = x.get() + dx
+      if (next <= -totalRef.current) next += totalRef.current
+      if (next > 0) next -= totalRef.current
+      x.set(next)
+    }
+    const onTE = () => {
+      if (!dragging.current) return
+      dragging.current = false; setIsDragging(false)
+      if (dir !== 'h') return
+      const hist = ptrHistory.current
+      const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
+      snapNearestRef.current(avgVel * 80)
+    }
+
+    el.addEventListener('touchstart', onTS, { passive: true })
+    el.addEventListener('touchmove', onTM, { passive: false })
+    el.addEventListener('touchend', onTE, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTS)
+      el.removeEventListener('touchmove', onTM)
+      el.removeEventListener('touchend', onTE)
+    }
+  }, [x])
 
   const jump = (dir: 1 | -1) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
@@ -403,15 +431,16 @@ function FeaturesCarousel() {
   const resumeScroll = () => { if (!dragging.current) { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 400) } }
 
   return (
-    <div className="select-none"
-      style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}>
+    <div className="select-none">
 
       {/* zone de pause = uniquement le track */}
       <div className="relative"
+        ref={trackRef}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
         onMouseEnter={pauseScroll}
         onMouseLeave={resumeScroll}>
         <div className="absolute left-0 top-0 bottom-0 w-6 md:w-32 z-10 pointer-events-none"
