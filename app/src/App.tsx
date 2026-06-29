@@ -914,7 +914,7 @@ export default function App() {
       </section>
 
       {/* ════ FEATURES ═══════════════════════════════════════════ */}
-      <section className="py-20 md:py-32 px-6 md:px-16" style={{ background: '#f8f7f5' }}>
+      <section className="py-20 md:py-32 px-6 md:px-16" style={{ background: '#faf8f3' }}>
         <div className="max-w-5xl mx-auto">
 
           <div className="mb-14 md:mb-18 text-center">
