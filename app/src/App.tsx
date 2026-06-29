@@ -588,7 +588,7 @@ export default function App() {
             style={{ filter: 'brightness(0.92) contrast(1.08) saturate(0.82)' }}>
             {/* vidéo — desktop et mobile, autoplay sur premier geste iOS */}
             <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
-              poster="/tap-photo.png"
+              poster="/hero-mobile-poster.webp"
               className="absolute inset-0 w-full h-full object-cover"
               style={{ left: '5%', width: '97%' }}>
               <source src="/hero.mp4" type="video/mp4" />
