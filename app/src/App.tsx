@@ -314,90 +314,65 @@ function FeaturesCarousel() {
 
   useEffect(() => { snapNearestRef.current = snapNearest }, [snapNearest])
 
-  // ── desktop : pointer events (souris) ──────────────────────────
+  // ── Pointer Events unifiés (souris + touch + stylet) — approche Embla ──────
+  // setPointerCapture assure que les events continuent même hors de l'élément
+  const startY = useRef(0)
+  const dirLocked = useRef<'h' | 'v' | null>(null)
+
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType !== 'mouse') return
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
-    autoOn.current = false; dragging.current = true; setIsDragging(true)
-    ptrHistory.current = []; lastPtr.current = e.clientX; lastT.current = performance.now()
+    autoOn.current = false
+    ptrHistory.current = []
+    lastPtr.current = e.clientX
+    lastT.current = performance.now()
+    startY.current = e.clientY
+    dirLocked.current = null
+    // isDragging visuel seulement après confirmation direction
   }
+
   const onPointerMove = (e: React.PointerEvent) => {
-    if (e.pointerType !== 'mouse' || !dragging.current) return
+    if (!autoOn.current === false && !dragging.current) return
     const now = performance.now()
-    const dx = e.clientX - lastPtr.current, dt = Math.max(1, now - lastT.current)
+    const dx = e.clientX - lastPtr.current
+    const dy = e.clientY - startY.current
+
+    // direction lock au premier move significatif (touch seulement)
+    if (e.pointerType !== 'mouse' && dirLocked.current === null) {
+      if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return
+      dirLocked.current = Math.abs(dx) >= Math.abs(dy) * 0.8 ? 'h' : 'v'
+      if (dirLocked.current === 'h') { dragging.current = true; setIsDragging(true) }
+      else { autoOn.current = true; return }
+    }
+    if (e.pointerType === 'mouse' && !dragging.current) { dragging.current = true; setIsDragging(true) }
+    if (!dragging.current) return
+
+    const dt = Math.max(1, now - lastT.current)
     ptrHistory.current.push({ dx, dt }); if (ptrHistory.current.length > 5) ptrHistory.current.shift()
     lastPtr.current = e.clientX; lastT.current = now
+    startY.current = e.clientY
     let next = x.get() + dx
     if (next <= -TOTAL) next += TOTAL; if (next > 0) next -= TOTAL
     x.set(next)
   }
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (e.pointerType !== 'mouse' || !dragging.current) return
-    dragging.current = false; setIsDragging(false)
+
+  const onPointerUp = () => {
+    if (!dragging.current) { autoOn.current = !isMobileRef.current; return }
+    dragging.current = false; setIsDragging(false); dirLocked.current = null
     const hist = ptrHistory.current
     const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
-    const momentum = avgVel * 110
-    if (Math.abs(momentum) > 15) {
-      let target = x.get() + momentum
-      if (target <= -TOTAL) target += TOTAL; if (target > 0) target -= TOTAL
-      animate(x, target, { type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
-        onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) } })
-    } else { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600) }
+    if (isMobileRef.current) {
+      snapNearest(avgVel * 80)
+    } else {
+      const momentum = avgVel * 110
+      if (Math.abs(momentum) > 15) {
+        let target = x.get() + momentum
+        if (target <= -TOTAL) target += TOTAL; if (target > 0) target -= TOTAL
+        animate(x, target, { type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
+          onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) } })
+      } else { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600) }
+    }
   }
-
-  // ── mobile : touch natif — touch-action:pan-y gère la séparation browser/JS ──
-  useEffect(() => {
-    const el = trackRef.current
-    if (!el) return
-    let sx = 0, sy = 0, intentH = false
-
-    const onTS = (e: TouchEvent) => {
-      sx = e.touches[0].clientX; sy = e.touches[0].clientY; intentH = false
-      if (resumeTimer.current) clearTimeout(resumeTimer.current)
-      autoOn.current = false
-      ptrHistory.current = []; lastPtr.current = sx; lastT.current = performance.now()
-    }
-    const onTM = (e: TouchEvent) => {
-      const cx = e.touches[0].clientX, cy = e.touches[0].clientY
-      // détecte intention au premier move significatif
-      if (!intentH) {
-        const adx = Math.abs(cx - sx), ady = Math.abs(cy - sy)
-        if (adx < 4 && ady < 4) return
-        if (ady > adx * 1.2) return   // vertical dominant → laisse défiler la page
-        intentH = true
-        dragging.current = true; setIsDragging(true)
-      }
-      if (!dragging.current) return
-      const now = performance.now()
-      const dx = cx - lastPtr.current, dt = Math.max(1, now - lastT.current)
-      ptrHistory.current.push({ dx, dt }); if (ptrHistory.current.length > 5) ptrHistory.current.shift()
-      lastPtr.current = cx; lastT.current = now
-      let next = x.get() + dx
-      if (next <= -totalRef.current) next += totalRef.current
-      if (next > 0) next -= totalRef.current
-      x.set(next)
-    }
-    const onTE = () => {
-      dragging.current = false; setIsDragging(false)
-      if (!intentH) return
-      const hist = ptrHistory.current
-      const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
-      snapNearestRef.current(avgVel * 80)
-    }
-
-    // passive:false sur touchmove pour pouvoir appeler preventDefault si besoin
-    el.addEventListener('touchstart', onTS, { passive: true })
-    el.addEventListener('touchmove', onTM, { passive: false })
-    el.addEventListener('touchend', onTE, { passive: true })
-    el.addEventListener('touchcancel', onTE, { passive: true })
-    return () => {
-      el.removeEventListener('touchstart', onTS)
-      el.removeEventListener('touchmove', onTM)
-      el.removeEventListener('touchend', onTE)
-      el.removeEventListener('touchcancel', onTE)
-    }
-  }, [x])
 
   const jump = (dir: 1 | -1) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
@@ -438,11 +413,11 @@ function FeaturesCarousel() {
       {/* zone de pause = uniquement le track */}
       <div className="relative"
         ref={trackRef}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
+        style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y pinch-zoom' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
-        onPointerLeave={onPointerUp}
+        onPointerCancel={onPointerUp}
         onMouseEnter={pauseScroll}
         onMouseLeave={resumeScroll}>
         <div className="absolute left-0 top-0 bottom-0 w-6 md:w-32 z-10 pointer-events-none"
