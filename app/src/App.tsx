@@ -223,7 +223,7 @@ const FEATURE_ITEMS = [
 const CARD_W = 372
 const GAP = 12
 
-function CarouselItem({ i, xMotion, children }: { i: number; xMotion: ReturnType<typeof useMotionValue<number>>; children: React.ReactNode }) {
+function CarouselItem({ i, xMotion, cardW, children }: { i: number; xMotion: ReturnType<typeof useMotionValue<number>>; cardW: number; children: React.ReactNode }) {
   const scale   = useMotionValue(1)
   const opacity = useMotionValue(0.85)
   const vwRef   = useRef(typeof window !== 'undefined' ? window.innerWidth : 1200)
@@ -237,18 +237,20 @@ function CarouselItem({ i, xMotion, children }: { i: number; xMotion: ReturnType
   useEffect(() => {
     return xMotion.on('change', (xVal) => {
       const viewCenter = vwRef.current / 2
-      const cardCenter = 24 + i * (CARD_W + GAP) + xVal + CARD_W / 2
+      const cardCenter = 16 + i * (cardW + GAP) + xVal + cardW / 2
       const dist = Math.abs(cardCenter - viewCenter)
-      scale.set(Math.max(0.94, 1.04 - dist / (CARD_W * 3)))
-      opacity.set(Math.max(0.75, 1 - dist / (CARD_W * 2.8)))
+      scale.set(Math.max(0.94, 1.04 - dist / (cardW * 3)))
+      opacity.set(Math.max(0.75, 1 - dist / (cardW * 2.8)))
     })
-  }, [xMotion, i])
+  }, [xMotion, i, cardW])
 
   return <motion.div style={{ scale, opacity }}>{children}</motion.div>
 }
 
 function FeaturesCarousel() {
-  const TOTAL       = (CARD_W + GAP) * FEATURE_ITEMS.length
+  const getCardW    = () => window.innerWidth < 768 ? Math.min(Math.round(window.innerWidth * 0.82), 340) : CARD_W
+  const [cardW, setCardW] = useState(getCardW)
+  const TOTAL       = (cardW + GAP) * FEATURE_ITEMS.length
   const x           = useMotionValue(0)
   const autoOn      = useRef(true)
   const dragging    = useRef(false)
@@ -256,40 +258,44 @@ function FeaturesCarousel() {
   const [isDragging, setIsDragging] = useState(false)
   const [activeIdx, setActiveIdx]   = useState(0)
 
-  // vélocité lissée — moyenne glissante sur les 5 derniers moves
+  useEffect(() => {
+    const onResize = () => setCardW(getCardW())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   const ptrHistory = useRef<{ dx: number; dt: number }[]>([])
   const lastPtr    = useRef(0)
   const lastT      = useRef(0)
   const extended   = [...FEATURE_ITEMS, ...FEATURE_ITEMS, ...FEATURE_ITEMS]
 
-  // auto-scroll — reprend seulement quand autoOn ET pas de spring en cours
+  // auto-scroll — plus lent sur mobile
   useAnimationFrame((_, delta) => {
     if (!autoOn.current || dragging.current) return
-    let next = x.get() - (delta / 1000) * 34
+    const speed = cardW < CARD_W ? 22 : 34
+    let next = x.get() - (delta / 1000) * speed
     if (next <= -TOTAL) next += TOTAL
     x.set(next)
   })
 
-  const onPointerDown = (e: React.PointerEvent) => {
+  const startDrag = (clientX: number) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
     autoOn.current = false
     dragging.current = true
     setIsDragging(true)
     ptrHistory.current = []
-    lastPtr.current = e.clientX
+    lastPtr.current = clientX
     lastT.current = performance.now()
-    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
   }
 
-  const onPointerMove = (e: React.PointerEvent) => {
+  const moveDrag = (clientX: number) => {
     if (!dragging.current) return
     const now = performance.now()
-    const dx  = e.clientX - lastPtr.current
+    const dx  = clientX - lastPtr.current
     const dt  = Math.max(1, now - lastT.current)
-    // historique glissant sur 5 frames
     ptrHistory.current.push({ dx, dt })
     if (ptrHistory.current.length > 5) ptrHistory.current.shift()
-    lastPtr.current = e.clientX
+    lastPtr.current = clientX
     lastT.current = now
     let next = x.get() + dx
     if (next <= -TOTAL) next += TOTAL
@@ -297,17 +303,12 @@ function FeaturesCarousel() {
     x.set(next)
   }
 
-  const onPointerUp = () => {
+  const endDrag = () => {
     if (!dragging.current) return
     dragging.current = false
     setIsDragging(false)
-
-    // vélocité = moyenne des 5 derniers moves
     const hist = ptrHistory.current
-    const avgVel = hist.length
-      ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length
-      : 0
-
+    const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
     const momentum = avgVel * 110
     if (Math.abs(momentum) > 15) {
       let target = x.get() + momentum
@@ -315,15 +316,25 @@ function FeaturesCarousel() {
       if (target > 0)       target -= TOTAL
       animate(x, target, {
         type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
-        onComplete: () => {
-          // reprise douce après que le spring soit terminé
-          resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800)
-        },
+        onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) },
       })
     } else {
       resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600)
     }
   }
+
+  // pointer events (desktop)
+  const onPointerDown = (e: React.PointerEvent) => {
+    try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
+    startDrag(e.clientX)
+  }
+  const onPointerMove = (e: React.PointerEvent) => moveDrag(e.clientX)
+  const onPointerUp   = () => endDrag()
+
+  // touch events (iOS Safari fallback)
+  const onTouchStart = (e: React.TouchEvent) => startDrag(e.touches[0].clientX)
+  const onTouchMove  = (e: React.TouchEvent) => { e.preventDefault(); moveDrag(e.touches[0].clientX) }
+  const onTouchEnd   = () => endDrag()
 
   const jump = (dir: 1 | -1) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
@@ -345,7 +356,7 @@ function FeaturesCarousel() {
       const viewCenter = window.innerWidth / 2
       let closest = 0, minDist = Infinity
       for (let i = 0; i < FEATURE_ITEMS.length * 3; i++) {
-        const cardCenter = 24 + i * (CARD_W + GAP) + xVal + CARD_W / 2
+        const cardCenter = 16 + i * (cardW + GAP) + xVal + cardW / 2
         const dist = Math.abs(cardCenter - viewCenter)
         if (dist < minDist) { minDist = dist; closest = i % FEATURE_ITEMS.length }
       }
@@ -367,26 +378,30 @@ function FeaturesCarousel() {
   const resumeScroll = () => { if (!dragging.current) { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 400) } }
 
   return (
-    <div className="select-none" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+    <div className="select-none"
+      style={{ cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'pan-y' }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}>
+      onPointerLeave={onPointerUp}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}>
 
       {/* zone de pause = uniquement le track */}
       <div className="relative"
         onMouseEnter={pauseScroll}
         onMouseLeave={resumeScroll}>
-        <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 z-10 pointer-events-none"
+        <div className="absolute left-0 top-0 bottom-0 w-6 md:w-32 z-10 pointer-events-none"
           style={{ background: 'linear-gradient(to right, #faf8f3 15%, transparent)' }} />
-        <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 z-10 pointer-events-none"
+        <div className="absolute right-0 top-0 bottom-0 w-6 md:w-32 z-10 pointer-events-none"
           style={{ background: 'linear-gradient(to left, #faf8f3 15%, transparent)' }} />
         <div style={{ overflowX: 'hidden', overflowY: 'visible', marginBottom: -36 }}>
-          <motion.div style={{ x, display: 'flex', gap: GAP, paddingTop: 20, paddingBottom: 56, paddingLeft: 24 }}>
+          <motion.div style={{ x, display: 'flex', gap: GAP, paddingTop: 20, paddingBottom: 56, paddingLeft: 16 }}>
             {extended.map(({ n, title, body }, i) => (
-              <CarouselItem key={i} i={i} xMotion={x}>
+              <CarouselItem key={i} i={i} xMotion={x} cardW={cardW}>
                 <FeatureCard n={n} title={title} body={body} index={i % 6}
-                  style={{ width: CARD_W, flexShrink: 0 }} />
+                  style={{ width: cardW, flexShrink: 0 }} />
               </CarouselItem>
             ))}
           </motion.div>
