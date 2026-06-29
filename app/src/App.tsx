@@ -499,9 +499,27 @@ export default function App() {
   useEffect(() => {
     const v = videoRef.current
     if (!v) return
-    v.muted = true           // force muted sur le DOM — bug connu React/iOS
+    v.muted = true
     v.setAttribute('playsinline', '')
-    setTimeout(() => v.play().catch(() => {}), 100)
+
+    const tryPlay = () => v.play().catch(() => {})
+
+    // tentative immédiate
+    setTimeout(tryPlay, 100)
+
+    // fallback : joue au premier geste (touchstart = scroll ou tap sur iOS)
+    const onGesture = () => {
+      tryPlay()
+      document.removeEventListener('touchstart', onGesture)
+      document.removeEventListener('pointerdown', onGesture)
+    }
+    document.addEventListener('touchstart', onGesture, { once: true, passive: true })
+    document.addEventListener('pointerdown', onGesture, { once: true, passive: true })
+
+    return () => {
+      document.removeEventListener('touchstart', onGesture)
+      document.removeEventListener('pointerdown', onGesture)
+    }
   }, [])
   const { scrollYProgress: hy } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const heroVY = useTransform(hy, [0, 1], ['0%', '25%'])
@@ -568,15 +586,13 @@ export default function App() {
           <div className="absolute inset-0 bg-black" />
           <div className="absolute inset-0"
             style={{ filter: 'brightness(0.92) contrast(1.08) saturate(0.82)' }}>
-            {/* desktop : vidéo */}
+            {/* vidéo — desktop et mobile, autoplay sur premier geste iOS */}
             <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
-              className="hidden md:block absolute inset-0 w-full h-full object-cover"
+              poster="/tap-photo.png"
+              className="absolute inset-0 w-full h-full object-cover"
               style={{ left: '5%', width: '97%' }}>
               <source src="/hero.mp4" type="video/mp4" />
             </video>
-            {/* mobile : image statique haute résolution + parallax via heroVY parent */}
-            <img src="/tap-photo.png" alt=""
-              className="md:hidden absolute inset-0 w-full h-full object-cover object-center" />
           </div>
           {/* gradient left fade */}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 8%, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.5) 38%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.05) 70%, transparent 85%)' }} />
