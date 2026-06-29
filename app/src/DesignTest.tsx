@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback } from 'react'
 import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring, useAnimationFrame, animate } from 'framer-motion'
 import './index.css'
 
@@ -11,12 +11,11 @@ const FEATURES = [
   { title: 'Livré avant que vous stressiez.', body: '5 jours ouvrés après validation. Chaque puce testée, chaque carte emballée à la main.' },
 ]
 
-const ease = [0.22, 1, 0.36, 1] as const
 const fu = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-60px' as never },
-  transition: { duration: 0.7, ease: ease as number[], delay },
+  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as unknown as any, delay },
 })
 
 /* ── VERSION G : Éditorial magazine — Vogue/i-D ────────────── */

@@ -428,7 +428,7 @@ function FeaturesCarousel() {
   )
 }
 
-function FeatureCard({ n, title, body, index, large = false, style: extraStyle = {} }: { n: string; title: string; body: string; index: number; large?: boolean; style?: React.CSSProperties }) {
+function FeatureCard({ title, body, index, large = false, style: extraStyle = {} }: { n?: string; title: string; body: string; index: number; large?: boolean; style?: React.CSSProperties }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const inView = useInView(cardRef, { once: true, margin: '-60px' })
 
