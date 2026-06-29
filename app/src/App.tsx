@@ -269,14 +269,45 @@ function FeaturesCarousel() {
   const lastT      = useRef(0)
   const extended   = [...FEATURE_ITEMS, ...FEATURE_ITEMS, ...FEATURE_ITEMS]
 
-  // auto-scroll — plus lent sur mobile
+  // auto-scroll desktop uniquement
   useAnimationFrame((_, delta) => {
-    if (!autoOn.current || dragging.current) return
-    const speed = cardW < CARD_W ? 22 : 34
-    let next = x.get() - (delta / 1000) * speed
+    if (!autoOn.current || dragging.current || cardW < CARD_W) return
+    let next = x.get() - (delta / 1000) * 34
     if (next <= -TOTAL) next += TOTAL
     x.set(next)
   })
+
+  const isMobileRef = useRef(cardW < CARD_W)
+  useEffect(() => { isMobileRef.current = cardW < CARD_W }, [cardW])
+
+  // snap à la card la plus proche — court-circuit TOTAL pour rester sur le chemin court
+  const snapNearest = useCallback((velocityHint = 0) => {
+    const xVal = x.get()
+    const cardStep = cardW + GAP
+    const viewCenter = window.innerWidth / 2
+    // cherche dans les 3 copies la card la plus proche + hint de vélocité
+    let bestIdx = 0, minDist = Infinity
+    for (let i = 0; i < extended.length; i++) {
+      const center = 16 + i * cardStep + xVal + cardW / 2
+      const dist = Math.abs(center - viewCenter - velocityHint * 0.15)
+      if (dist < minDist) { minDist = dist; bestIdx = i }
+    }
+    // x cible pour centrer cette card
+    let target = viewCenter - 16 - bestIdx * cardStep - cardW / 2
+    // ramener target près du x actuel (évite le chemin long de l'infini)
+    while (target - xVal > TOTAL / 2) target -= TOTAL
+    while (xVal - target > TOTAL / 2) target += TOTAL
+    animate(x, target, {
+      type: 'spring', stiffness: isMobileRef.current ? 320 : 200, damping: 32, restDelta: 0.5,
+      onComplete: () => {
+        // normalise après snap
+        const cur = x.get()
+        if (cur <= -TOTAL) x.set(cur + TOTAL)
+        if (cur > 0) x.set(cur - TOTAL)
+        if (!isMobileRef.current) resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800)
+      },
+    })
+  }, [cardW, TOTAL, x, extended])
 
   const startDrag = (clientX: number) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
@@ -309,45 +340,39 @@ function FeaturesCarousel() {
     setIsDragging(false)
     const hist = ptrHistory.current
     const avgVel = hist.length ? hist.reduce((s, h) => s + h.dx / h.dt, 0) / hist.length : 0
-    const momentum = avgVel * 110
-    if (Math.abs(momentum) > 15) {
-      let target = x.get() + momentum
-      if (target <= -TOTAL) target += TOTAL
-      if (target > 0)       target -= TOTAL
-      animate(x, target, {
-        type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
-        onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) },
-      })
+    if (isMobileRef.current) {
+      // mobile : snap à la card la plus proche, vélocité comme hint de direction
+      snapNearest(avgVel * 80)
     } else {
-      resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600)
+      // desktop : momentum libre puis reprise auto-scroll
+      const momentum = avgVel * 110
+      if (Math.abs(momentum) > 15) {
+        let target = x.get() + momentum
+        if (target <= -TOTAL) target += TOTAL
+        if (target > 0)       target -= TOTAL
+        animate(x, target, {
+          type: 'spring', stiffness: 55, damping: 20, restDelta: 0.5,
+          onComplete: () => { resumeTimer.current = setTimeout(() => { autoOn.current = true }, 800) },
+        })
+      } else {
+        resumeTimer.current = setTimeout(() => { autoOn.current = true }, 600)
+      }
     }
   }
 
-  // pointer events (desktop)
+  // pointer events seulement (couvre desktop ET mobile moderne — pas de double event)
   const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'touch') e.preventDefault()
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId) } catch {}
     startDrag(e.clientX)
   }
   const onPointerMove = (e: React.PointerEvent) => moveDrag(e.clientX)
   const onPointerUp   = () => endDrag()
 
-  // touch events (iOS Safari fallback)
-  const onTouchStart = (e: React.TouchEvent) => startDrag(e.touches[0].clientX)
-  const onTouchMove  = (e: React.TouchEvent) => { e.preventDefault(); moveDrag(e.touches[0].clientX) }
-  const onTouchEnd   = () => endDrag()
-
   const jump = (dir: 1 | -1) => {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
     autoOn.current = false
-    let target = x.get() + dir * -(CARD_W + GAP)
-    if (target <= -TOTAL) target += TOTAL
-    if (target > 0)       target -= TOTAL
-    animate(x, target, {
-      type: 'spring', stiffness: 200, damping: 30,
-      onComplete: () => {
-        resumeTimer.current = setTimeout(() => { autoOn.current = true }, 1200)
-      },
-    })
+    snapNearest(dir * -(cardW + GAP) * 3)
   }
 
   // dot actif
@@ -383,10 +408,7 @@ function FeaturesCarousel() {
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      onPointerLeave={onPointerUp}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}>
+      onPointerLeave={onPointerUp}>
 
       {/* zone de pause = uniquement le track */}
       <div className="relative"
