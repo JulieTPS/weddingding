@@ -471,6 +471,55 @@ function FeaturesCarousel() {
   )
 }
 
+function FeatureIcon({ index }: { index: number }) {
+  return (
+    <div className="relative flex items-center justify-center rounded-full shrink-0" style={{ width: 40, height: 40, background: '#e8826a' }}>
+      {index === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M4.5 12.5C4.5 8.4 7.9 5 12 5s7.5 3.4 7.5 7.5"/><path d="M8 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/></svg>}
+      {index === 1 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20V8"/><path d="M12 8C12 8 15 4 19 5C16 6 13 10 13 13"/><path d="M12 13C12 13 9 11 7 7C6 4 8 2 10 3C9 6 11 10 12 13"/></svg>}
+      {index === 2 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12l9 5 9-5"/><path d="M8 8V6a4 4 0 018 0v2"/></svg>}
+      {index === 3 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21C12 21 3 15 3 9a5 5 0 0110-1 5 5 0 0110 1c0 6-9 12-9 12z"/></svg>}
+      {index === 4 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>}
+      {index === 5 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M5 7l1.5-3h11L19 7"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg>}
+    </div>
+  )
+}
+
+function FeaturesListMobile() {
+  return (
+    <div className="flex flex-col px-6">
+      {FEATURE_ITEMS.map(({ n, title, body }, i) => (
+        <motion.div key={i}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' as never }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] as any, delay: i * 0.06 }}
+          className="flex gap-4 py-6"
+          style={{ borderBottom: i < FEATURE_ITEMS.length - 1 ? '1px solid rgba(200,168,110,0.15)' : 'none' }}>
+          <div className="flex flex-col items-center gap-2 shrink-0 pt-0.5">
+            <FeatureIcon index={i} />
+            <span className="font-sans text-[0.5rem] tracking-[0.18em]" style={{ color: '#c8a86e' }}>{n}</span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <h3 className="font-serif leading-snug tracking-[-0.01em]" style={{ fontSize: '1.05rem', color: '#2c2c2c' }}>{title}</h3>
+            <p className="font-sans font-light leading-relaxed" style={{ fontSize: '0.82rem', color: '#9a9590' }}>{body}</p>
+          </div>
+        </motion.div>
+      ))}
+      <div className="flex justify-center mt-8">
+        <motion.a href="#tarifs"
+          initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.3 }}
+          className="flex items-center gap-2 font-sans text-[0.78rem] tracking-[0.08em]"
+          style={{ color: '#c8a86e', textDecoration: 'none' }}>
+          Voir les tarifs
+          <motion.span animate={{ y: [0, 3, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ display: 'inline-block' }}>↓</motion.span>
+        </motion.a>
+      </div>
+    </div>
+  )
+}
+
 function FeatureCard({ title, body, index, large = false, style: extraStyle = {} }: { n?: string; title: string; body: string; index: number; large?: boolean; style?: React.CSSProperties }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const inView = useInView(cardRef, { once: true, margin: '-60px' })
@@ -543,14 +592,7 @@ function FeatureCard({ title, body, index, large = false, style: extraStyle = {}
               animationDelay: `${j * 0.05 + index * 0.12}s`,
             } as React.CSSProperties} />
           ))}
-          <div className="relative flex items-center justify-center rounded-full z-10" style={{ width: 36, height: 36, background: '#e8826a' }}>
-          {index === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M4.5 12.5C4.5 8.4 7.9 5 12 5s7.5 3.4 7.5 7.5"/><path d="M8 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/></svg>}
-          {index === 1 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20V8"/><path d="M12 8C12 8 15 4 19 5C16 6 13 10 13 13"/><path d="M12 13C12 13 9 11 7 7C6 4 8 2 10 3C9 6 11 10 12 13"/></svg>}
-          {index === 2 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12l9 5 9-5"/><path d="M8 8V6a4 4 0 018 0v2"/></svg>}
-          {index === 3 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21C12 21 3 15 3 9a5 5 0 0110-1 5 5 0 0110 1c0 6-9 12-9 12z"/></svg>}
-          {index === 4 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>}
-          {index === 5 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M5 7l1.5-3h11L19 7"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg>}
-          </div>
+          <FeatureIcon index={index} />
         </div>
         <div className="flex flex-col gap-2">
           <h3 className={large ? 'font-serif leading-tight tracking-[-0.01em] text-[1.25rem]' : 'font-sans font-medium text-[0.95rem]'} style={{ color: '#2c2c2c' }}>{title}</h3>
@@ -1203,8 +1245,16 @@ export default function App() {
                 ))}
               </motion.div>
             </div>
-        <FeaturesCarousel />
 
+          {/* mobile : liste verticale */}
+          <div className="md:hidden mt-8">
+            <FeaturesListMobile />
+          </div>
+
+          {/* desktop : carousel */}
+          <div className="hidden md:block">
+            <FeaturesCarousel />
+          </div>
 
           </div>
         </div>
