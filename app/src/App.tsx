@@ -589,8 +589,7 @@ export default function App() {
             {/* vidéo — desktop et mobile, autoplay sur premier geste iOS */}
             <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
               poster="/hero-mobile-poster.webp"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ left: '5%', width: '97%' }}>
+              className="absolute inset-0 w-full h-full object-cover md:left-[5%] md:w-[97%]">
               <source src="/hero.mp4" type="video/mp4" />
             </video>
           </div>
