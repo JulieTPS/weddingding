@@ -844,7 +844,7 @@ function VersionW() {
         <motion.h2
           initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' as never }}
-          transition={{ duration: 0.7, ease: [0.22,1,0.36,1] as number[] }}
+          transition={{ duration: 0.7, ease: [0.22,1,0.36,1] as any }}
           className="font-serif leading-[0.95] tracking-[-0.03em]"
           style={{ fontSize: 'clamp(2.2rem, 4.5vw, 4rem)', color: '#ede8de' }}>
           Beau à regarder.<br /><em style={{ color: '#e8826a' }}>Magique à recevoir.</em>
