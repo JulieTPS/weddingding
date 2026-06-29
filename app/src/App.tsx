@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import {
   motion, useScroll, useTransform, useSpring,
-  useMotionValue, AnimatePresence, useInView
+  useMotionValue, AnimatePresence, useInView,
+  useAnimationFrame, animate
 } from 'framer-motion'
 import Lenis from 'lenis'
 import './index.css'
@@ -210,7 +211,178 @@ function Mag({ children, className = '' }: { children: React.ReactNode; classNam
 
 /* ══ Fade-up helper ═════════════════════════════════════════ */
 /* ══ Feature card — tilt 3D + sweep doré auto + stagger LR ══ */
-function FeatureCard({ n, title, body, index }: { n: string; title: string; body: string; index: number }) {
+const FEATURE_ITEMS = [
+  { n: '01', title: 'Vos invités n\'installent rien', body: 'Un tap sur la carte, le site s\'ouvre. Pas d\'app, pas de QR code, pas d\'explication à donner.' },
+  { n: '02', title: 'Vous gardez le contrôle jusqu\'au dernier moment', body: 'Salle changée, horaire décalé ? Modifiez en ligne et tous vos invités voient la mise à jour en temps réel, même après l\'envoi.' },
+  { n: '03', title: 'Plus un seul RSVP perdu', body: 'Chaque réponse arrive directement dans votre tableau de bord. Fini les SMS oubliés et les listes Excel qui se contredisent.' },
+  { n: '04', title: 'Une carte aussi belle que votre mariage', body: 'Papier coton 350g, dorure à chaud, gravure à sec. Fabriquée sur mesure, pas à partir d\'un template générique.' },
+  { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones, iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
+  { n: '06', title: 'Entre vos mains en 5 jours', body: 'Cartes programmées, testées et emballées avec soin. Expédiées sous 5 jours ouvrés, partout en France.' },
+]
+
+const CARD_W = 372
+const GAP = 12
+
+function CarouselItem({ i, xMotion, children }: { i: number; xMotion: ReturnType<typeof useMotionValue<number>>; children: React.ReactNode }) {
+  const scale   = useMotionValue(1)
+  const opacity = useMotionValue(0.8)
+
+  useEffect(() => {
+    const unsub = xMotion.on('change', (xVal) => {
+      const viewCenter = window.innerWidth / 2
+      const cardCenter = 24 + i * (CARD_W + GAP) + xVal + CARD_W / 2
+      const dist = Math.abs(cardCenter - viewCenter)
+      scale.set(Math.max(0.93, 1.04 - dist / (CARD_W * 3)))
+      opacity.set(Math.max(0.5, 1 - dist / (CARD_W * 2.2)))
+    })
+    return unsub
+  }, [xMotion, i])
+
+  return <motion.div style={{ scale, opacity }}>{children}</motion.div>
+}
+
+function FeaturesCarousel() {
+  const TOTAL    = (CARD_W + GAP) * FEATURE_ITEMS.length
+  const x        = useMotionValue(0)
+  const autoOn   = useRef(true)
+  const dragging = useRef(false)
+  const [activeIdx, setActiveIdx] = useState(0)
+  const lastPtr  = useRef(0)
+  const lastT    = useRef(0)
+  const vel      = useRef(0)
+  const extended = [...FEATURE_ITEMS, ...FEATURE_ITEMS, ...FEATURE_ITEMS]
+
+  // auto-scroll
+  useAnimationFrame((_, delta) => {
+    if (!autoOn.current || dragging.current) return
+    let next = x.get() - (delta / 1000) * 34
+    if (next <= -TOTAL) next += TOTAL
+    x.set(next)
+  })
+
+  // drag handlers
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragging.current = true
+    lastPtr.current = e.clientX
+    lastT.current = performance.now()
+    vel.current = 0
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  }
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return
+    const now = performance.now()
+    const dx  = e.clientX - lastPtr.current
+    vel.current = dx / Math.max(1, now - lastT.current)
+    lastPtr.current = e.clientX
+    lastT.current = now
+    let next = x.get() + dx
+    if (next <= -TOTAL) next += TOTAL
+    if (next > 0)       next -= TOTAL
+    x.set(next)
+  }
+  const onPointerUp = () => {
+    if (!dragging.current) return
+    dragging.current = false
+    const momentum = vel.current * 120
+    if (Math.abs(momentum) > 20) {
+      let target = x.get() + momentum
+      if (target <= -TOTAL) target += TOTAL
+      if (target > 0)       target -= TOTAL
+      animate(x, target, { type: 'spring', stiffness: 60, damping: 22, restDelta: 0.5 })
+    }
+  }
+
+  const jump = (dir: 1 | -1) => {
+    let target = x.get() + dir * -(CARD_W + GAP)
+    if (target <= -TOTAL) target += TOTAL
+    if (target > 0)       target -= TOTAL
+    animate(x, target, { type: 'spring', stiffness: 200, damping: 30 })
+  }
+
+  // dot actif — card la plus proche du centre viewport
+  useEffect(() => {
+    return x.on('change', (xVal) => {
+      const viewCenter = window.innerWidth / 2
+      let closest = 0, minDist = Infinity
+      for (let i = 0; i < FEATURE_ITEMS.length * 3; i++) {
+        const cardCenter = 24 + i * (CARD_W + GAP) + xVal + CARD_W / 2
+        const dist = Math.abs(cardCenter - viewCenter)
+        if (dist < minDist) { minDist = dist; closest = i % FEATURE_ITEMS.length }
+      }
+      setActiveIdx(closest)
+    })
+  }, [x])
+
+  useEffect(() => {
+    const prev = document.getElementById('feat-←')
+    const next = document.getElementById('feat-→')
+    const onP = () => jump(-1)
+    const onN = () => jump(1)
+    prev?.addEventListener('click', onP)
+    next?.addEventListener('click', onN)
+    return () => { prev?.removeEventListener('click', onP); next?.removeEventListener('click', onN) }
+  }, [])
+
+  return (
+    <div className="relative select-none"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
+      onMouseEnter={() => { autoOn.current = false }}
+      onMouseLeave={() => { autoOn.current = true }}
+      style={{ cursor: 'grab' }}>
+      <div className="absolute left-0 top-0 bottom-0 w-24 md:w-40 z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to right, #faf8f3 15%, transparent)' }} />
+      <div className="absolute right-0 top-0 bottom-0 w-24 md:w-40 z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to left, #faf8f3 15%, transparent)' }} />
+      <div style={{ overflowX: 'hidden', overflowY: 'visible', marginBottom: -36 }}>
+        <motion.div style={{ x, display: 'flex', gap: GAP, paddingTop: 20, paddingBottom: 56, paddingLeft: 24 }}>
+          {extended.map(({ n, title, body }, i) => (
+            <CarouselItem key={i} i={i} xMotion={x}>
+              <FeatureCard n={n} title={title} body={body} index={i % 6}
+                style={{ width: CARD_W, flexShrink: 0 }} />
+            </CarouselItem>
+          ))}
+        </motion.div>
+      </div>
+      {/* dots dynamiques */}
+      <div className="flex items-center justify-center gap-2 mt-8 px-6">
+        <div className="h-px w-10" style={{ background: 'rgba(200,168,110,0.2)' }} />
+        {FEATURE_ITEMS.map((_, i) => (
+          <div key={i} className="rounded-full"
+            style={{
+              width: activeIdx === i ? 22 : 4,
+              height: 4,
+              background: activeIdx === i ? '#e8826a' : 'rgba(200,168,110,0.25)',
+              transition: 'width 0.35s cubic-bezier(0.22,1,0.36,1), background 0.35s ease',
+            }} />
+        ))}
+        <div className="h-px w-10" style={{ background: 'rgba(200,168,110,0.2)' }} />
+      </div>
+
+      {/* CTA */}
+      <div className="flex justify-center mt-10 px-6">
+        <motion.a href="#tarifs"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: 2 }}
+          className="flex items-center gap-2 font-sans text-[0.78rem] tracking-[0.08em]"
+          style={{ color: '#c8a86e', textDecoration: 'none' }}>
+          Voir les tarifs
+          <motion.span
+            animate={{ y: [0, 3, 0] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ display: 'inline-block', fontSize: '0.9rem' }}>↓</motion.span>
+        </motion.a>
+      </div>
+    </div>
+  )
+}
+
+function FeatureCard({ n, title, body, index, large = false, style: extraStyle = {} }: { n: string; title: string; body: string; index: number; large?: boolean; style?: React.CSSProperties }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const inView = useInView(cardRef, { once: true, margin: '-60px' })
 
@@ -226,15 +398,12 @@ function FeatureCard({ n, title, body, index }: { n: string; title: string; body
   }
   const onLeave = () => { mx.set(0); my.set(0) }
 
-  // stagger alterné gauche/droite
-  const fromX = index % 2 === 0 ? -28 : 28
-
   return (
     <motion.div
       ref={cardRef}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 900 }}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d', perspective: 900, ...extraStyle }}
       initial={{ opacity: 0, y: 48, rotateX: 18, scale: 0.92, filter: 'blur(6px)' }}
       animate={inView ? { opacity: 1, y: 0, rotateX: 0, scale: 1, filter: 'blur(0px)' } : {}}
       transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1], delay: index * 0.09 }}
@@ -243,16 +412,17 @@ function FeatureCard({ n, title, body, index }: { n: string; title: string; body
         rest: { boxShadow: '0 2px 12px rgba(0,0,0,0.04)' },
         hover: { scale: 1.02, boxShadow: '0 12px 40px rgba(0,0,0,0.10)', transition: { duration: 0.25 } },
       }}
-      className="relative flex gap-5 p-6 md:p-8 rounded-xl overflow-hidden cursor-default">
+      className={`relative rounded-xl overflow-hidden cursor-default h-full ${large ? 'flex flex-col gap-6 p-8 md:p-10' : 'flex gap-5 p-6 md:p-8'}`}>
 
       <div className="absolute inset-0 rounded-xl" style={{ background: 'white', border: '1px solid #ece8e4' }} />
+      {large && <div className="absolute left-0 top-8 bottom-8 w-[3px] rounded-full" style={{ background: 'linear-gradient(to bottom, #c8a86e, rgba(200,168,110,0.2))' }} />}
 
       {/* sweep doré au hover */}
       <motion.span className="absolute inset-0 pointer-events-none"
         style={{ background: 'linear-gradient(105deg, transparent 20%, rgba(200,168,110,0.12) 40%, rgba(240,210,140,0.22) 50%, rgba(200,168,110,0.12) 60%, transparent 80%)', x: '-140%' }}
         variants={{ rest: { x: '-140%' }, hover: { x: '140%', transition: { duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] } } }} />
 
-      <div className="relative z-10 flex gap-4 w-full">
+      <div className={`relative z-10 flex gap-4 w-full ${large ? 'items-start' : ''}`}>
         <div className="shrink-0 relative flex items-center justify-center" style={{ width: 44, height: 44, flexShrink: 0 }}>
           {/* paillettes 3D qui flippent */}
           {[
@@ -294,8 +464,8 @@ function FeatureCard({ n, title, body, index }: { n: string; title: string; body
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <h3 className="font-sans font-medium text-[0.95rem]" style={{ color: '#2c2c2c' }}>{title}</h3>
-          <p className="font-sans font-light text-[0.82rem] leading-relaxed" style={{ color: '#9a9590' }}>{body}</p>
+          <h3 className={large ? 'font-serif leading-tight tracking-[-0.01em] text-[1.25rem]' : 'font-sans font-medium text-[0.95rem]'} style={{ color: '#2c2c2c' }}>{title}</h3>
+          <p className="font-sans font-light leading-relaxed" style={{ fontSize: large ? '0.88rem' : '0.82rem', color: '#9a9590' }}>{body}</p>
         </div>
       </div>
     </motion.div>
@@ -914,37 +1084,42 @@ export default function App() {
       </section>
 
       {/* ════ FEATURES ═══════════════════════════════════════════ */}
-      <section className="py-20 md:py-32 px-6 md:px-16" style={{ background: '#faf8f3' }}>
-        <div className="max-w-5xl mx-auto">
+      <section className="py-20 md:py-32 overflow-hidden" style={{ background: '#faf8f3' }}>
+        <div className="px-6 md:px-16">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-end justify-between mb-14 md:mb-18">
+              <div>
+                <motion.p {...fu()} className="font-pacifico text-[1rem] mb-4" style={{ color: '#e8826a' }}>WeddingDing</motion.p>
+                <motion.h2 {...fu(0.08)} className="font-serif leading-[1.08] tracking-[-0.02em]"
+                  style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: '#2c2c2c' }}>
+                  Beau à regarder.<br />
+                  <em style={{ color: '#e8826a' }}>Magique à recevoir.</em>
+                </motion.h2>
+                <motion.div {...fu(0.16)} className="flex items-center gap-3 mt-6">
+                  <div className="h-px w-10" style={{ background: '#c8a86e' }} />
+                  <span className="font-sans text-[0.52rem] tracking-[0.22em] uppercase" style={{ color: '#c8a86e' }}>Ce qui change tout</span>
+                  <div className="h-px w-10" style={{ background: '#c8a86e' }} />
+                </motion.div>
+              </div>
+              {/* flèches navigation */}
+              <motion.div {...fu(0.2)} className="hidden md:flex gap-3 shrink-0 mb-1">
+                {(['←', '→'] as const).map((label) => (
+                  <button key={label} id={`feat-${label}`}
+                    className="flex items-center justify-center rounded-full transition-all duration-200"
+                    style={{ width: 44, height: 44, background: 'white', border: '1px solid #ece8e4', color: '#c8a86e', fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#fdf5ee')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
+                    {label}
+                  </button>
+                ))}
+              </motion.div>
+            </div>
+        <FeaturesCarousel />
 
-          <div className="mb-14 md:mb-18 text-center">
-            <motion.p {...fu()} className="font-pacifico text-[1rem] mb-4" style={{ color: '#e8826a' }}>WeddingDing</motion.p>
-            <motion.h2 {...fu(0.08)} className="font-serif leading-[1.08] tracking-[-0.02em]"
-              style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: '#2c2c2c' }}>
-              Beau à regarder.<br />
-              <em style={{ color: '#e8826a' }}>Magique à recevoir.</em>
-            </motion.h2>
-            <motion.div {...fu(0.16)} className="flex items-center gap-3 justify-center mt-6">
-              <div className="h-px w-10" style={{ background: '#c8a86e' }} />
-              <span className="font-sans text-[0.52rem] tracking-[0.22em] uppercase" style={{ color: '#c8a86e' }}>Ce qui change tout</span>
-              <div className="h-px w-10" style={{ background: '#c8a86e' }} />
-            </motion.div>
+
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
-            {[
-              { n: '01', title: 'Vos invités n\'installent rien', body: 'Un tap sur la carte, le site s\'ouvre. Pas d\'app, pas de QR code, pas d\'explication à donner.' },
-              { n: '02', title: 'Vous gardez le contrôle jusqu\'au dernier moment', body: 'Salle changée, horaire décalé ? Modifiez en ligne et tous vos invités voient la mise à jour en temps réel, même après l\'envoi.' },
-              { n: '03', title: 'Plus un seul RSVP perdu', body: 'Chaque réponse arrive directement dans votre tableau de bord. Fini les SMS oubliés et les listes Excel qui se contredisent.' },
-              { n: '04', title: 'Une carte aussi belle que votre mariage', body: 'Papier coton 350g, dorure à chaud, gravure à sec. Fabriquée sur mesure, pas à partir d\'un template générique.' },
-              { n: '05', title: 'Aucun invité laissé de côté', body: 'Compatible avec 95% des smartphones, iPhone comme Android, vieux modèles compris. Aucun réglage à faire côté invité.' },
-              { n: '06', title: 'Entre vos mains en 5 jours', body: 'Cartes programmées, testées et emballées avec soin. Expédiées sous 5 jours ouvrés, partout en France.' },
-            ].map(({ n, title, body }, i) => (
-              <FeatureCard key={i} n={n} title={title} body={body} index={i} />
-            ))}
-          </div>
-
         </div>
+
       </section>
 
       {/* ════ COMMENT ÇA MARCHE ══════════════════════════════════ */}
