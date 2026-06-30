@@ -471,15 +471,36 @@ function FeaturesCarousel() {
   )
 }
 
+const PAILLETTES = [
+  { top: '-4%', left: '68%', size: 10, dur: '3.8s', rot: '12deg',  color: '#c8a86e', char: '✦' },
+  { top: '72%', left: '82%', size: 8,  dur: '4.4s', rot: '-8deg',  color: '#e8826a', char: '✦' },
+  { top: '82%', left: '6%',  size: 9,  dur: '5.1s', rot: '20deg',  color: '#fff',    char: '✧' },
+  { top: '-2%', left: '14%', size: 7,  dur: '4.2s', rot: '-15deg', color: '#c8a86e', char: '✦' },
+  { top: '42%', left: '98%', size: 7,  dur: '5.6s', rot: '5deg',   color: '#e8826a', char: '✧' },
+  { top: '38%', left: '-4%', size: 6,  dur: '4.8s', rot: '-20deg', color: '#fff',    char: '✦' },
+  { top: '20%', left: '90%', size: 6,  dur: '6.0s', rot: '30deg',  color: '#c8a86e', char: '✧' },
+  { top: '60%', left: '-2%', size: 5,  dur: '3.5s', rot: '-5deg',  color: '#e8826a', char: '✦' },
+]
+
 function FeatureIcon({ index }: { index: number }) {
   return (
-    <div className="relative flex items-center justify-center rounded-full shrink-0" style={{ width: 40, height: 40, background: '#e8826a' }}>
-      {index === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M4.5 12.5C4.5 8.4 7.9 5 12 5s7.5 3.4 7.5 7.5"/><path d="M8 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/></svg>}
-      {index === 1 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20V8"/><path d="M12 8C12 8 15 4 19 5C16 6 13 10 13 13"/><path d="M12 13C12 13 9 11 7 7C6 4 8 2 10 3C9 6 11 10 12 13"/></svg>}
-      {index === 2 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12l9 5 9-5"/><path d="M8 8V6a4 4 0 018 0v2"/></svg>}
-      {index === 3 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21C12 21 3 15 3 9a5 5 0 0110-1 5 5 0 0110 1c0 6-9 12-9 12z"/></svg>}
-      {index === 4 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>}
-      {index === 5 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M5 7l1.5-3h11L19 7"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg>}
+    <div className="relative shrink-0 flex items-center justify-center" style={{ width: 44, height: 44 }}>
+      {PAILLETTES.map((s, j) => (
+        <span key={j} className="paillette" style={{
+          top: s.top, left: s.left, fontSize: s.size, color: s.color,
+          '--r': s.rot, animationDuration: s.dur,
+          animationDelay: `${index * 0.5 + j * 0.4}s`,
+          textShadow: `0 0 3px ${s.color}`,
+        } as React.CSSProperties}>{s.char}</span>
+      ))}
+      <div className="relative flex items-center justify-center rounded-full z-10" style={{ width: 36, height: 36, background: '#e8826a' }}>
+        {index === 0 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M4.5 12.5C4.5 8.4 7.9 5 12 5s7.5 3.4 7.5 7.5"/><path d="M8 12.5c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="12" cy="12.5" r="1.5" fill="white" stroke="none"/></svg>}
+        {index === 1 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 20V8"/><path d="M12 8C12 8 15 4 19 5C16 6 13 10 13 13"/><path d="M12 13C12 13 9 11 7 7C6 4 8 2 10 3C9 6 11 10 12 13"/></svg>}
+        {index === 2 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12l9 5 9-5"/><path d="M8 8V6a4 4 0 018 0v2"/></svg>}
+        {index === 3 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M12 21C12 21 3 15 3 9a5 5 0 0110-1 5 5 0 0110 1c0 6-9 12-9 12z"/></svg>}
+        {index === 4 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>}
+        {index === 5 && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round"><path d="M5 7l1.5-3h11L19 7"/><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg>}
+      </div>
     </div>
   )
 }
@@ -561,28 +582,7 @@ function FeatureCard({ title, body, index, large = false, style: extraStyle = {}
         variants={{ rest: { x: '-140%' }, hover: { x: '140%', transition: { duration: 1.1, ease: [0.25, 0.46, 0.45, 0.94] } } }} />
 
       <div className={`relative z-10 flex gap-4 w-full ${large ? 'items-start' : ''}`}>
-        <div className="shrink-0 relative flex items-center justify-center" style={{ width: 44, height: 44, flexShrink: 0 }}>
-          {/* paillettes 3D qui flippent */}
-          {[
-            { top: '-4%', left: '68%', size: 10, dur: '3.8s', delay: `${index*0.5}s`,        rot: '12deg',  color: '#c8a86e', char: '✦' },
-            { top: '72%', left: '82%', size: 8,  dur: '4.4s', delay: `${index*0.5+0.8}s`,    rot: '-8deg',  color: '#e8826a', char: '✦' },
-            { top: '82%', left: '6%',  size: 9,  dur: '5.1s', delay: `${index*0.5+1.6}s`,    rot: '20deg',  color: '#fff',    char: '✧' },
-            { top: '-2%', left: '14%', size: 7,  dur: '4.2s', delay: `${index*0.5+2.5}s`,    rot: '-15deg', color: '#c8a86e', char: '✦' },
-            { top: '42%', left: '98%', size: 7,  dur: '5.6s', delay: `${index*0.5+0.4}s`,    rot: '5deg',   color: '#e8826a', char: '✧' },
-            { top: '38%', left: '-4%', size: 6,  dur: '4.8s', delay: `${index*0.5+3.2}s`,    rot: '-20deg', color: '#fff',    char: '✦' },
-            { top: '20%', left: '90%', size: 6,  dur: '6.0s', delay: `${index*0.5+1.2}s`,    rot: '30deg',  color: '#c8a86e', char: '✧' },
-            { top: '60%', left: '-2%', size: 5,  dur: '3.5s', delay: `${index*0.5+2.0}s`,    rot: '-5deg',  color: '#e8826a', char: '✦' },
-          ].map((s, j) => (
-            <span key={j} className="paillette" style={{
-              top: s.top, left: s.left,
-              fontSize: s.size,
-              color: s.color,
-              '--r': s.rot,
-              animationDuration: s.dur,
-              animationDelay: s.delay,
-              textShadow: `0 0 3px ${s.color}`,
-            } as React.CSSProperties}>{s.char}</span>
-          ))}
+        <div className="shrink-0 relative" style={{ width: 44, height: 44 }}>
           {/* burst d'étincelles à l'entrée */}
           {inView && [0,1,2,3,4,5,6,7].map(j => (
             <div key={j} className="spark" style={{
